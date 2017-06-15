@@ -18,7 +18,7 @@ import okhttp3.Response;
 /**
  * Author: luqihua
  * Time: 2017/6/5
- * Description: 上传多个文件  每个文件建立一次HTTP链接
+ * Description: multi file upload one by one
  */
 
 public class MultiFileUpRequest extends AbstractRequest<MultiFileUpRequest> {

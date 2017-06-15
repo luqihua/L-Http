@@ -27,7 +27,7 @@ import okhttp3.ResponseBody;
 /**
  * Author: luqihua
  * Time: 2017/6/7
- * Description: 文件下载接口
+ * Description: DownLoadRequest
  */
 
 public class DownLoadRequest extends AbstractRequest<DownLoadRequest> {
@@ -71,11 +71,6 @@ public class DownLoadRequest extends AbstractRequest<DownLoadRequest> {
         return this;
     }
 
-    /**
-     * 构造请求
-     *
-     * @return
-     */
     @Override
     protected Request createRequest() {
 
@@ -107,9 +102,7 @@ public class DownLoadRequest extends AbstractRequest<DownLoadRequest> {
 
 
     /**
-     * 重写文件下载的observerString方法   下载结束返回目标文件路径
-     *
-     * @return
+     * @return target File path
      */
     public Observable<String> observerString() {
         return observerResponse()
@@ -121,7 +114,7 @@ public class DownLoadRequest extends AbstractRequest<DownLoadRequest> {
                         try {
                             ResponseBody responseBody = response.body();
 
-                            //包装ResponseBody
+                            //packing ResponseBody
                             if (mProgressCallback != null) {
                                 responseBody = new DownloadBody(responseBody, mProgressCallback);
                             }

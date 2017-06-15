@@ -14,7 +14,7 @@ import java.security.NoSuchAlgorithmException;
 
 public class HttpUtil {
     /**
-     * 获取文件的mimetype
+     * get mimetype by file Extension
      *
      * @param file
      * @return
@@ -31,7 +31,7 @@ public class HttpUtil {
     }
 
     /**
-     * 对内容进行md5加密
+     * digest the context by md5
      * @param content
      * @return
      */

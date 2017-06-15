@@ -14,7 +14,7 @@ import okio.Okio;
 /**
  * Author: luqihua
  * Time: 2017/6/8
- * Description: 相应实体解压的拦截器
+ * Description: GzipResponseIntercept
  */
 
 public class GzipResponseIntercept implements Interceptor {

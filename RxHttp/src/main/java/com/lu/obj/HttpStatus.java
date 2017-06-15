@@ -5,7 +5,7 @@ import android.util.SparseArray;
 /**
  * Author: luqihua
  * Time: 2017/6/1
- * Description: Http响应码
+ * Description: HttpStatus
  */
 
 public class HttpStatus {
@@ -18,7 +18,6 @@ public class HttpStatus {
         sStatusArray.put(101, "Switching Protocols");
         /**
          * 2**
-         * 成功，操作被成功接收并处理
          */
         sStatusArray.put(200, "OK");
         sStatusArray.put(201, "Created");
@@ -30,8 +29,7 @@ public class HttpStatus {
 
 
         /**
-         * 3**状态码
-         * 重定向，需要进一步的操作以完成请求
+         * 3**
          */
         sStatusArray.put(300, "Multiple Choices");
         sStatusArray.put(301, "Moved Permanently");
@@ -43,8 +41,7 @@ public class HttpStatus {
         sStatusArray.put(307, "Temporary Redirect");
 
         /**
-         * 4**状态码
-         * 客户端错误，请求包含语法错误或无法完成请求
+         * 4**
          */
         sStatusArray.put(400, "Bad Request");
         sStatusArray.put(401, "Unauthorized");
@@ -65,8 +62,7 @@ public class HttpStatus {
         sStatusArray.put(416, "Requested range not satisfiable");
         sStatusArray.put(417, "Expectation Failed");
         /**
-         * 5**状态码
-         * 服务器错误，服务器在处理请求的过程中发生了错误
+         * 5**
          */
         sStatusArray.put(500, "Internal Server Error");
         sStatusArray.put(501, "Not Implemented");

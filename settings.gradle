@@ -1,1 +1,1 @@
-include ':app', ':FileDown', ':RxHttp'
+include ':RxHttp'

@@ -83,11 +83,7 @@ public class HttpsFactory {
         return TRUSTED_VERIFIER;
     }
 
-
     /**
-     * 安卓的 SSLContext 自带的TrustManager无法让本文示例中提到的自签名证书通过验证.
-     * 解决的办法是自己定义一个 TrustManager 类. 然后用这个类去验证自签名证书.
-     *
      * @param trustManagers
      * @return
      */

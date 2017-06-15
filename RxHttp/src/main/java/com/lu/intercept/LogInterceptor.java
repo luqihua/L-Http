@@ -46,7 +46,7 @@ public class LogInterceptor implements Interceptor {
         }
 
         long t1 = System.currentTimeMillis();
-        //响应体
+
         Response response = chain.proceed(request);
 
         long t2 = System.currentTimeMillis();
@@ -61,7 +61,7 @@ public class LogInterceptor implements Interceptor {
 
         String content = null;
 
-        //只打印带有text,json的响应体
+        //just print text and json
         if (type == null || type.type().contains("text") || type.type().contains("json")) {
 
             content = response.body().string();

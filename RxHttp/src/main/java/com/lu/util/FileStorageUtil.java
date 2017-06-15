@@ -9,7 +9,7 @@ import java.io.IOException;
 /**
  * Author: luqihua
  * Time: 2017/5/26
- * Description: app文件管理器
+ * Description: FileStorageUtil
  */
 
 public class FileStorageUtil {
@@ -35,7 +35,7 @@ public class FileStorageUtil {
     }
 
     /**
-     * app的根目录
+     * app external adCard root file path
      *
      * @return
      */
@@ -76,7 +76,7 @@ public class FileStorageUtil {
     }
 
     /**
-     * okhttp缓存的路径
+     * okhttp cache file path
      *
      * @return
      */

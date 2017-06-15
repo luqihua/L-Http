@@ -14,7 +14,7 @@ public interface IRequest<T> {
 
     T url(String url);
 
-    T tag(Object tag);
+    T tag(String tag);
 
     T method(@Const.HttpMethod String method);
 

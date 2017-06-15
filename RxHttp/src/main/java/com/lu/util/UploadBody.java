@@ -66,12 +66,12 @@ public class UploadBody extends RequestBody {
                     contentLength = contentLength();
                 }
 
-                //增加当前写入的字节数
+                //add written byte length
                 byteWritten += byteCount;
                 int progress = (int) (byteWritten * 100f / contentLength);
                 mHandler.sendEmptyMessage(progress);
 
-                //上传完毕后已读置为0
+                //reset byteWritten when complete
                 if (byteWritten == contentLength) {
                     byteWritten = 0;
                 }

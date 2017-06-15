@@ -42,13 +42,13 @@ public abstract class AbstractRequest<T> implements IRequest<T>, IExecute {
 
     protected HttpHeader mHeaders;
 
-    protected Object mTag;
+    protected String mTag;
 
-    protected boolean isLog = RxHttp.debug;//是否打印log
+    protected boolean isLog = RxHttp.debug;//will log or not
 
-    protected CacheControl mCacheControl;//自定义缓存策略
+    protected CacheControl mCacheControl;//local cache rule
 
-    protected String mForceCache;//修改响应头的Cache-Control字段
+    protected String mForceCache;//change the header:Cache-Control of response
 
     protected T obj;
 
@@ -65,7 +65,7 @@ public abstract class AbstractRequest<T> implements IRequest<T>, IExecute {
     }
 
     @Override
-    public T tag(Object tag) {
+    public T tag(String tag) {
         this.mTag = tag;
         return obj;
     }
@@ -108,18 +108,18 @@ public abstract class AbstractRequest<T> implements IRequest<T>, IExecute {
 
         Request.Builder builder = createRequest().newBuilder();
 
-         /*添加请求头*/
+         /*add headers*/
         if (mHeaders != null) {
             for (Map.Entry<String, String> entry : mHeaders.entrySet()) {
                 builder.addHeader(entry.getKey(), entry.getValue());
             }
         }
-        /*添加tag*/
+        /*add tag*/
         if (mTag != null) {
             builder.tag(mTag);
         }
 
-        /*添加缓存控制*/
+        /*add Cache-Control*/
         if (mCacheControl != null) {
             builder.cacheControl(mCacheControl);
         }
@@ -146,12 +146,12 @@ public abstract class AbstractRequest<T> implements IRequest<T>, IExecute {
             @Override
             public void subscribe(@NonNull ObservableEmitter<Response> emitter) throws Exception {
                 Request request = getRequest();
-                Object tag = request.tag();
+                String tag = (String) request.tag();
                 try {
                     Call call = getClient().newCall(request);
 
                     if (tag != null) {
-                        RxHttp.addCall(request.tag(), call);
+                        RxHttp.addCall(tag, call);
                     }
 
                     Response response = call.execute();
@@ -194,9 +194,6 @@ public abstract class AbstractRequest<T> implements IRequest<T>, IExecute {
         })
                 .subscribeOn(Schedulers.io());
     }
-
-
-    /*--抽象方法---*/
 
 
     protected abstract Request createRequest();

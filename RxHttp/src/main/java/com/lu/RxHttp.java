@@ -30,7 +30,7 @@ public class RxHttp {
     public static boolean debug = false;
     private static OkHttpClient sClient;
 
-    private static ConcurrentHashMap<Object, List<Call>> sWorkList = new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<String, List<Call>> sWorkList = new ConcurrentHashMap<>();
 
     public static void init(OkHttpClient client) {
         sClient = client == null ? getDefault() : client;
@@ -60,7 +60,7 @@ public class RxHttp {
     }
 
     /**
-     * 表单请求
+     * from post
      *
      * @return
      */
@@ -69,7 +69,7 @@ public class RxHttp {
     }
 
     /**
-     * 单文件上传请求
+     * single file upload
      *
      * @return
      */
@@ -79,7 +79,7 @@ public class RxHttp {
 
 
     /**
-     * 多个文件依次上传请求
+     * multi file upload
      *
      * @return
      */
@@ -89,7 +89,7 @@ public class RxHttp {
 
 
     /**
-     * 多个文件同时上传请求
+     * multiPart post
      *
      * @return
      */
@@ -99,7 +99,7 @@ public class RxHttp {
 
 
     /**
-     * 文件下载
+     * file download
      *
      * @return
      */
@@ -114,7 +114,8 @@ public class RxHttp {
      * @param tag
      * @param call
      */
-    public static void addCall(Object tag, Call call) {
+    public static void addCall(String tag, Call call) {
+        tag.getClass().getSimpleName();
         if (sWorkList.containsKey(tag)) {
             sWorkList.get(tag).add(call);
         } else {
@@ -130,7 +131,7 @@ public class RxHttp {
      *
      * @param tag
      */
-    public static void cancelRequest(Object tag) {
+    public static void cancelRequest(String tag) {
         if (sWorkList.containsKey(tag)) {
             List<Call> calls = sWorkList.get(tag);
             for (Call call : calls) {

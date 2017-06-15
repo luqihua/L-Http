@@ -16,7 +16,7 @@ import okhttp3.RequestBody;
 /**
  * Author: luqihua
  * Time: 2017/6/5
- * Description: 多个文件一次性上传
+ * Description: multi file upload by once
  */
 
 public class MultiPartRequest extends AbstractRequest<MultiPartRequest> {

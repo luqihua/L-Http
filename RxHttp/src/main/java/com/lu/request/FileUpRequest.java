@@ -5,7 +5,6 @@ import com.lu.util.HttpUtil;
 import com.lu.util.UploadBody;
 
 import java.io.File;
-import java.util.Map;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -15,7 +14,7 @@ import okhttp3.RequestBody;
 /**
  * Author: luqihua
  * Time: 2017/6/5
- * Description: 单个文件上传
+ * Description: single file upload
  */
 
 public class FileUpRequest extends AbstractRequest<FileUpRequest> {
@@ -51,22 +50,9 @@ public class FileUpRequest extends AbstractRequest<FileUpRequest> {
         return this;
     }
 
-    /**
-     * 构建单个文件上传的请求体
-     *
-     * @return
-     */
     @Override
     protected Request createRequest() {
         Request.Builder builder = new Request.Builder().url(mUrl);
-
-        /*添加请求头*/
-        if (mHeaders != null) {
-            for (Map.Entry<String, String> entry : mHeaders.entrySet()) {
-                builder.addHeader(entry.getKey(), entry.getValue());
-            }
-        }
-        //添加上传的文件体
 
         RequestBody requestBody = RequestBody
                 .create(MediaType.parse(HttpUtil.getMimeTypeFromFile(mFile)), mFile);
@@ -75,7 +61,7 @@ public class FileUpRequest extends AbstractRequest<FileUpRequest> {
                 .addFormDataPart(mKey, mFileName, requestBody)
                 .build();
 
-        //根据ProgressCallBack的值是否为空判断是否需要包装requestBody检测进度
+        //packing the requestBody the get upload progress
         if (mListener != null) {
             body = new UploadBody(body, mListener);
         }

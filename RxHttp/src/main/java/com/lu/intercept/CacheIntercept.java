@@ -28,7 +28,6 @@ public class CacheIntercept implements Interceptor {
 
         Response response = chain.proceed(chain.request());
 
-        //只对get请求的数据做缓存
         if (!chain.request().method().equals("GET")) {
             return response;
         }

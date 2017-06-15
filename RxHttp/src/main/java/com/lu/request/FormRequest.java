@@ -13,7 +13,7 @@ import okhttp3.Request;
 /**
  * Author: luqihua
  * Time: 2017/6/5
- * Description: 表单上传数据
+ * Description: form post
  */
 
 public class FormRequest extends AbstractRequest<FormRequest> {
