@@ -12,10 +12,8 @@ import com.lu.util.FileStorageUtil;
 
 import java.io.File;
 
-import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import lu.httpdemo.R;
 import lu.httpdemo.util.BindView;
 import lu.httpdemo.util.InjectUtil;
@@ -49,26 +47,10 @@ public class FileDownLoadActivity extends AppCompatActivity {
                 })
                 .targetFile(file)
                 .observerString()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<String>() {
+                .subscribe(new Consumer<String>() {
                     @Override
-                    public void onSubscribe(@NonNull Disposable d) {
-                        Log.d("FileDownLoadActivity", "开始下载");
-                    }
-
-                    @Override
-                    public void onNext(@NonNull String path) {
-                        Log.d("FileDownLoadActivity", "onNext:" + path);
-                    }
-
-                    @Override
-                    public void onError(@NonNull Throwable e) {
-                        Log.d("FileDownLoadActivity", "下载错误" + e);
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        Log.d("FileDownLoadActivity", "结束下载");
+                    public void accept(@NonNull String s) throws Exception {
+                        Log.d("FileDownLoadActivity", s);
                     }
                 });
 
