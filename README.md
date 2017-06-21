@@ -1,4 +1,4 @@
-# HttpStudio
+# RxHttp
 okHttp+RxJava的简单封装
 
 > 初始化
