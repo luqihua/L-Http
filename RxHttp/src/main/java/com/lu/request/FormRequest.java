@@ -25,6 +25,27 @@ public class FormRequest extends AbstractRequest<FormRequest> {
         this.obj = this;
     }
 
+    /**
+     * get request
+     *
+     * @return
+     */
+    public FormRequest get(String url) {
+        this.mMethod = Const.GET;
+        this.mUrl = url;
+        return this;
+    }
+
+    /**
+     * post request
+     *
+     * @return
+     */
+    public FormRequest post(String url) {
+        this.mMethod = Const.POST;
+        this.mUrl = url;
+        return this;
+    }
 
     public FormRequest addParam(String key, String value) {
         if (mParams == null) {

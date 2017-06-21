@@ -2,9 +2,9 @@ package com.lu.request;
 
 import android.text.TextUtils;
 
-import com.lu.RxHttp;
 import com.lu.Interface.IExecute;
 import com.lu.Interface.IRequest;
+import com.lu.RxHttp;
 import com.lu.intercept.CacheIntercept;
 import com.lu.intercept.LogInterceptor;
 import com.lu.obj.HttpException;
@@ -36,19 +36,19 @@ import okhttp3.Response;
 
 public abstract class AbstractRequest<T> implements IRequest<T>, IExecute {
 
-    protected String mUrl;
+    String mUrl;
 
-    protected String mMethod;
+    String mMethod;
 
-    protected HttpHeader mHeaders;
+    HttpHeader mHeaders;
 
-    protected String mTag;
+    String mTag;
 
-    protected boolean isLog = RxHttp.debug;//will log or not
+    boolean isLog;//will log or not
 
-    protected CacheControl mCacheControl;//local cache rule
+    CacheControl mCacheControl;//local cache rule
 
-    protected String mForceCache;//change the header:Cache-Control of response
+    String mForceCache;//change the header:Cache-Control of response
 
     protected T obj;
 
@@ -106,7 +106,16 @@ public abstract class AbstractRequest<T> implements IRequest<T>, IExecute {
     @Override
     public Request getRequest() {
 
+        if (mUrl == null || mUrl.length() == 0 || !mUrl.startsWith("http")) {
+            throw new RuntimeException("incorrect http url");
+        }
+
         Request.Builder builder = createRequest().newBuilder();
+
+        /*add public header*/
+        for (Map.Entry<String, String> entry : RxHttp.getPublicHeader().entrySet()) {
+            builder.addHeader(entry.getKey(), entry.getValue());
+        }
 
          /*add headers*/
         if (mHeaders != null) {
@@ -114,10 +123,9 @@ public abstract class AbstractRequest<T> implements IRequest<T>, IExecute {
                 builder.addHeader(entry.getKey(), entry.getValue());
             }
         }
-        /*add tag*/
-        if (mTag != null) {
-            builder.tag(mTag);
-        }
+        /*add tag  default tag is the url*/
+        mTag = mTag == null ? mUrl : mTag;
+        builder.tag(mTag);
 
         /*add Cache-Control*/
         if (mCacheControl != null) {
@@ -142,6 +150,7 @@ public abstract class AbstractRequest<T> implements IRequest<T>, IExecute {
 
     @Override
     public Observable<Response> observerResponse() {
+
         return Observable.create(new ObservableOnSubscribe<Response>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<Response> emitter) throws Exception {
@@ -160,13 +169,13 @@ public abstract class AbstractRequest<T> implements IRequest<T>, IExecute {
                         emitter.onNext(response);
                         emitter.onComplete();
                     } else {
-                        HttpStatus status = HttpStatus.creatErrorEntity(response.code());
+                        HttpStatus status = HttpStatus.createEntity(response.code());
                         HttpException exception = new HttpException(status.code, status.description);
                         emitter.onError(exception);
                     }
 
                 } finally {
-                    RxHttp.cancelRequest(tag);
+                    RxHttp.cancelCall(tag);
                 }
             }
         });
@@ -191,10 +200,8 @@ public abstract class AbstractRequest<T> implements IRequest<T>, IExecute {
             public InputStream apply(@NonNull Response response) throws Exception {
                 return response.body().byteStream();
             }
-        })
-                .subscribeOn(Schedulers.io());
+        });
     }
-
 
     protected abstract Request createRequest();
 

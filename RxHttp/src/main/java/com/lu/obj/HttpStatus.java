@@ -10,9 +10,10 @@ import android.util.SparseArray;
 
 public class HttpStatus {
 
-    private static SparseArray<String> sStatusArray = new SparseArray<>();
+    private static SparseArray<String> sStatusArray;
 
     static {
+        sStatusArray = new SparseArray<>();
         sStatusArray.put(100, "Continue");
         sStatusArray.put(100, "Continue");
         sStatusArray.put(101, "Switching Protocols");
@@ -80,7 +81,7 @@ public class HttpStatus {
         this.description = description;
     }
 
-    public static HttpStatus creatErrorEntity(int code) {
+    public static HttpStatus createEntity(int code) {
         return new HttpStatus(code, getHttpErrorMessage(code));
     }
 

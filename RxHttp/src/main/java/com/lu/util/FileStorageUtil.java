@@ -16,7 +16,7 @@ public class FileStorageUtil {
 
     private Context mContext;
     private String rootDir = "tmp";
-    private static final String HTTP_CACHE_DIR = "okcache";
+
 
     private FileStorageUtil() {
     }
@@ -40,14 +40,16 @@ public class FileStorageUtil {
      * @return
      */
     public File getAppRootFile() {
-        if (mContext == null) {
-            throw new RuntimeException("please init FileStorageUtil first");
-        }
         File file;
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-            file = new File(Environment.getExternalStorageDirectory().getAbsoluteFile(), rootDir);
+            file = new File(Environment.getExternalStorageDirectory()
+                    .getAbsoluteFile(), rootDir);
         } else {
-            file = new File(mContext.getCacheDir().getAbsoluteFile(), rootDir);
+            if (mContext == null) {
+                throw new RuntimeException("please init FileStorageUtil first");
+            } else {
+                file = new File(mContext.getCacheDir().getAbsoluteFile(), rootDir);
+            }
         }
 
         if (!file.exists()) {
@@ -73,18 +75,6 @@ public class FileStorageUtil {
             }
         }
         return file;
-    }
-
-    /**
-     * okhttp cache file path
-     *
-     * @return
-     */
-    public File getOkHttpCacheFile() {
-        if (mContext == null) {
-            throw new RuntimeException("please init FileStorageUtil first");
-        }
-        return new File(mContext.getExternalCacheDir(), HTTP_CACHE_DIR);
     }
 
 }

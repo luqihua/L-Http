@@ -1,6 +1,7 @@
 package com.lu.request;
 
 import com.lu.Interface.ProgressCallBack;
+import com.lu.util.Const;
 import com.lu.util.HttpUtil;
 import com.lu.util.UploadBody;
 
@@ -29,9 +30,13 @@ public class FileUpRequest extends AbstractRequest<FileUpRequest> {
 
     public FileUpRequest() {
         this.obj = this;
+        this.mMethod = Const.POST;
     }
 
     public FileUpRequest addFile(String key, File file) {
+        if (file == null) {
+            throw new RuntimeException("the file to key: " + key + " is null");
+        }
         return addFile(key, file.getName(), file);
     }
 
@@ -45,7 +50,7 @@ public class FileUpRequest extends AbstractRequest<FileUpRequest> {
         return this;
     }
 
-    public FileUpRequest addProgressListener(ProgressCallBack listener) {
+    public FileUpRequest progress(ProgressCallBack listener) {
         this.mListener = listener;
         return this;
     }

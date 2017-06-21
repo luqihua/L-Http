@@ -1,1 +1,1 @@
-include ':RxHttp'
+include ':RxHttp', ':Demo'

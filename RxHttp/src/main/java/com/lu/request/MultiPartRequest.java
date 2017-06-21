@@ -44,7 +44,7 @@ public class MultiPartRequest extends AbstractRequest<MultiPartRequest> {
         return this;
     }
 
-    public MultiPartRequest addProgressListener(ProgressCallBack callback) {
+    public MultiPartRequest progress(ProgressCallBack callback) {
         this.mProgressCallback = callback;
         return this;
     }

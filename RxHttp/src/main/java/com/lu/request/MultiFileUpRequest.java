@@ -44,7 +44,7 @@ public class MultiFileUpRequest extends AbstractRequest<MultiFileUpRequest> {
         return this;
     }
 
-    public MultiFileUpRequest addProgressListener(ProgressCallBack listener) {
+    public MultiFileUpRequest progress(ProgressCallBack listener) {
         this.listener = listener;
         return this;
     }
@@ -68,7 +68,7 @@ public class MultiFileUpRequest extends AbstractRequest<MultiFileUpRequest> {
                                 .tag(mTag)
                                 .log(isLog)
                                 .addFile(entry.getKey(), entry.getValue())
-                                .addProgressListener(listener)
+                                .progress(listener)
                                 .observerResponse();
                     }
                 });

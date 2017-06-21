@@ -1,20 +1,17 @@
 package com.lu;
 
-import com.lu.intercept.GzipRequestIntercept;
-import com.lu.intercept.GzipResponseIntercept;
-import com.lu.request.DownLoadRequest;
-import com.lu.request.FormRequest;
-import com.lu.request.FileUpRequest;
-import com.lu.request.MultiFileUpRequest;
-import com.lu.request.MultiPartRequest;
-import com.lu.util.Const;
-import com.lu.util.FileStorageUtil;
+import android.content.Context;
+import android.os.Environment;
 
+import com.lu.obj.HttpHeader;
+import com.lu.util.Const;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
+import io.reactivex.annotations.NonNull;
 import okhttp3.Cache;
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
@@ -27,95 +24,88 @@ import okhttp3.OkHttpClient;
 
 public class RxHttp {
 
-    public static boolean debug = false;
     private static OkHttpClient sClient;
-
+    private static HttpHeader sHeader = new HttpHeader();
     private static ConcurrentHashMap<String, List<Call>> sWorkList = new ConcurrentHashMap<>();
 
-    public static void init(OkHttpClient client) {
-        sClient = client == null ? getDefault() : client;
+
+    public static void init(Context context) {
+        init(context, null);
     }
 
-
-    public static void setDebug(boolean debug) {
-        RxHttp.debug = debug;
+    public static void init(Context context, OkHttpClient client) {
+        init(context, client, null);
     }
 
-    private static OkHttpClient getDefault() {
-        OkHttpClient.Builder builder = new OkHttpClient.Builder()
-                .connectTimeout(10, TimeUnit.SECONDS)
-                .readTimeout(10, TimeUnit.SECONDS)
-                .cache(new Cache(FileStorageUtil.getInstance().getOkHttpCacheFile(), Const.MAX_CACHE_SIZE))
-                .addInterceptor(new GzipRequestIntercept())
-                .addInterceptor(new GzipResponseIntercept());
+    public static void init(Context context, OkHttpClient client, HttpHeader header) {
+        if (context == null) {
+            throw new RuntimeException("RxHttp.init() context must not be null");
+        }
 
-        return builder.build();
+        sHeader = header;
+
+        sClient = client;
+
+        if (sClient == null) {
+            sClient = new OkHttpClient();
+        }
+
+        if (sClient.cache() == null) {
+            Cache cache = createCache(context);
+            if (cache != null) {
+                sClient = sClient.newBuilder().cache(cache).build();
+            }
+        }
     }
 
+    /**
+     * @return HttpHeader
+     */
+    public static HttpHeader getPublicHeader() {
+        if (sHeader == null) {
+            sHeader = new HttpHeader();
+        }
+        return sHeader;
+    }
+
+    /**
+     * @return OkHttpClient
+     */
     public static OkHttpClient getClient() {
         if (sClient == null) {
-            sClient = getDefault();
+            sClient = new OkHttpClient();
         }
         return sClient;
     }
 
     /**
-     * from post
+     * default cache config
      *
+     * @param context
      * @return
      */
-    public static FormRequest FormRequest() {
-        return new FormRequest();
+    private static Cache createCache(@NonNull Context context) {
+        File file = null;
+        if (context != null) {
+            file = new File(context.getExternalCacheDir(), Const.HTTP_CACHE_DIR);
+        } else {
+            if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+                file = new File(Environment.getExternalStorageDirectory(), Const.HTTP_CACHE_DIR);
+            }
+        }
+        if (file != null) {
+            return new Cache(file, Const.MAX_CACHE_SIZE);
+        }
+        return null;
     }
 
     /**
-     * single file upload
-     *
-     * @return
-     */
-    public static FileUpRequest UpFileRequest() {
-        return new FileUpRequest();
-    }
-
-
-    /**
-     * multi file upload
-     *
-     * @return
-     */
-    public static MultiFileUpRequest MultiFileRequest() {
-        return new MultiFileUpRequest();
-    }
-
-
-    /**
-     * multiPart post
-     *
-     * @return
-     */
-    public static MultiPartRequest MultiPartRequest() {
-        return new MultiPartRequest();
-    }
-
-
-    /**
-     * file download
-     *
-     * @return
-     */
-    public static DownLoadRequest DownFileRequest() {
-        return new DownLoadRequest();
-    }
-
-
-    /**
-     * 加入一个请求
+     * add a call
      *
      * @param tag
      * @param call
      */
     public static void addCall(String tag, Call call) {
-        tag.getClass().getSimpleName();
         if (sWorkList.containsKey(tag)) {
             sWorkList.get(tag).add(call);
         } else {
@@ -125,13 +115,12 @@ public class RxHttp {
         }
     }
 
-
     /**
-     * 取消一个请求
+     * cancel a call
      *
      * @param tag
      */
-    public static void cancelRequest(String tag) {
+    public static void cancelCall(String tag) {
         if (sWorkList.containsKey(tag)) {
             List<Call> calls = sWorkList.get(tag);
             for (Call call : calls) {
@@ -140,8 +129,6 @@ public class RxHttp {
                 }
             }
             sWorkList.remove(tag);
-
         }
     }
-
 }

@@ -54,7 +54,7 @@ public class DownLoadRequest extends AbstractRequest<DownLoadRequest> {
         return this;
     }
 
-    public DownLoadRequest progressCallback(ProgressCallBack callback) {
+    public DownLoadRequest progress(ProgressCallBack callback) {
         this.mProgressCallback = callback;
         return this;
     }
