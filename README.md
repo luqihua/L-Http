@@ -1,6 +1,9 @@
 # RxHttp
 okHttp+RxJava的简单封装
 
+
+# 引入方式
+
 > maven 引入
 ```
 <dependency>
@@ -15,6 +18,9 @@ okHttp+RxJava的简单封装
 ```
 compile 'com.lu.lib:RxHttp:1.0.1'
 ```
+
+# 使用说明
+
 
 > 初始化
 ```
@@ -188,5 +194,4 @@ new MultiFileUpRequest()
                 });
 
 ```
-
 
