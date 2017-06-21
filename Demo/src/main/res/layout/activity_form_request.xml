@@ -4,11 +4,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="请求地址: \nhttp://119.23.237.24:8080/demo/loginServlet" />
-
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

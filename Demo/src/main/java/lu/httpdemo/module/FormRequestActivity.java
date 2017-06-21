@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 
+import com.lu.obj.HttpObserver;
 import com.lu.request.FormRequest;
 
 import io.reactivex.annotations.NonNull;
@@ -32,11 +33,16 @@ public class FormRequestActivity extends AppCompatActivity {
                 .log(false)
                 .addParam("username", "luqihua")
                 .addParam("password", "helloworld")
-                .observerString()
-                .subscribe(new Consumer<String>() {
+                .observerResult()
+                .subscribe(new HttpObserver() {
                     @Override
-                    public void accept(@NonNull String s) throws Exception {
-                        mResultView.setText(s);
+                    protected void onSuccess(String data, String msg) {
+                        mResultView.setText("onSuccess:\n" + "data: " + data + "\nmsg: " + msg);
+                    }
+
+                    @Override
+                    protected void onCustomError(int code, String msg) {
+                        mResultView.setText("onCustomError:  \ncode: " + code + "\nmsg: " + msg);
                     }
                 });
     }
@@ -44,7 +50,7 @@ public class FormRequestActivity extends AppCompatActivity {
 
     public void post(View view) {
         new FormRequest()
-                .post("http://119.23.237.24:8080/demo/loginServlet")
+                .post("http://119.23.237.24:8080/demo/login")
                 .log(true)
                 .addParam("username", "luqihua")
                 .addParam("password", "helloworld")

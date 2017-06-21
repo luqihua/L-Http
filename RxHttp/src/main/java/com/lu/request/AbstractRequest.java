@@ -10,6 +10,7 @@ import com.lu.intercept.LogInterceptor;
 import com.lu.obj.HttpException;
 import com.lu.obj.HttpHeader;
 import com.lu.obj.HttpStatus;
+import com.lu.obj.Result;
 import com.lu.util.Const;
 
 import java.io.InputStream;
@@ -38,7 +39,7 @@ public abstract class AbstractRequest<T> implements IRequest<T>, IExecute {
 
     String mUrl;
 
-    String mMethod;
+    String mMethod = Const.POST;//default post request
 
     HttpHeader mHeaders;
 
@@ -201,6 +202,25 @@ public abstract class AbstractRequest<T> implements IRequest<T>, IExecute {
                 return response.body().byteStream();
             }
         });
+    }
+
+    /**
+     * @return
+     */
+    public Observable<Result> observerResult() {
+        if (RxHttp.getTransformer() == null) {
+            throw new RuntimeException("please call RxHttp.setHttpTransformer() to add a HttpTransFormer");
+        }
+        return observerResponse()
+                .map(new Function<Response, String>() {
+                    @Override
+                    public String apply(@NonNull Response response) throws Exception {
+                        return response.body().string();
+                    }
+                })
+                .compose(RxHttp.getTransformer())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
     protected abstract Request createRequest();
