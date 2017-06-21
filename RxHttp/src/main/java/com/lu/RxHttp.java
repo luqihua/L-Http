@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Environment;
 
 import com.lu.obj.HttpHeader;
+import com.lu.obj.HttpTransformer;
 import com.lu.util.Const;
 
 import java.io.File;
@@ -27,7 +28,7 @@ public class RxHttp {
     private static OkHttpClient sClient;
     private static HttpHeader sHeader = new HttpHeader();
     private static ConcurrentHashMap<String, List<Call>> sWorkList = new ConcurrentHashMap<>();
-
+    private static HttpTransformer sHttpTransformer;
 
     public static void init(Context context) {
         init(context, null);
@@ -58,6 +59,11 @@ public class RxHttp {
         }
     }
 
+
+    public static void setHttpTransformer(HttpTransformer sHttpTransformer) {
+        RxHttp.sHttpTransformer = sHttpTransformer;
+    }
+
     /**
      * @return HttpHeader
      */
@@ -76,6 +82,11 @@ public class RxHttp {
             sClient = new OkHttpClient();
         }
         return sClient;
+    }
+
+
+    public static HttpTransformer getTransformer() {
+        return sHttpTransformer;
     }
 
     /**

@@ -3,6 +3,7 @@ package lu.httpdemo.app;
 import android.app.Application;
 
 import com.lu.RxHttp;
+import com.lu.obj.HttpTransformer;
 import com.lu.util.FileStorageUtil;
 import com.lu.util.HttpsFactory;
 
@@ -46,5 +47,6 @@ public class BaseApp extends Application {
         }
 
         RxHttp.init(this, builder.build());
+        RxHttp.setHttpTransformer(new HttpTransformer("code", "msg", "data", 1));
     }
 }
