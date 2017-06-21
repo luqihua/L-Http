@@ -20,7 +20,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".module.HMacActivity" />
         <activity android:name=".module.FormRequestActivity" />
         <activity android:name=".module.FileDownLoadActivity" />
         <activity android:name=".module.FileUploadActivity" />

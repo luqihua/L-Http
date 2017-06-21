@@ -18,10 +18,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import lu.httpdemo.R;
 import lu.httpdemo.util.BindView;
@@ -99,7 +98,6 @@ public class FileUploadActivity extends AppCompatActivity {
         }
 
         new MultiFileUpRequest()
-//                .url("http://192.168.70.56:8080/Test/upload")
                 .url("http://119.23.237.24:8080/demo/upload")
                 .addFile("image", imageFile)
                 .addFile("image1", imageFile1)
@@ -114,26 +112,10 @@ public class FileUploadActivity extends AppCompatActivity {
                 .observerString()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<String>() {
+                .subscribe(new Consumer<String>() {
                     @Override
-                    public void onSubscribe(@NonNull Disposable d) {
-                        Log.d("FileUploadActivity", "Observer: 开始");
-                    }
-
-                    @Override
-                    public void onNext(@NonNull String s) {
+                    public void accept(@NonNull String s) throws Exception {
                         mResultView.setText(s);
-                        Log.d("FileUploadActivity", "Observer: " + s);
-                    }
-
-                    @Override
-                    public void onError(@NonNull Throwable e) {
-                        Log.d("FileUploadActivity", "e:" + e);
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        Log.d("FileUploadActivity", "Observer结束");
                     }
                 });
     }
@@ -161,26 +143,10 @@ public class FileUploadActivity extends AppCompatActivity {
                     }
                 })
                 .observerString()
-                .subscribe(new Observer<String>() {
+                .subscribe(new Consumer<String>() {
                     @Override
-                    public void onSubscribe(@NonNull Disposable d) {
-                        Log.d("FileUploadActivity", "Observer: 开始");
-                    }
-
-                    @Override
-                    public void onNext(@NonNull String s) {
+                    public void accept(@NonNull String s) throws Exception {
                         mResultView.setText(s);
-                        Log.d("FileUploadActivity", "Observer: " + s);
-                    }
-
-                    @Override
-                    public void onError(@NonNull Throwable e) {
-                        Log.d("FileUploadActivity", "e:" + e);
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        Log.d("FileUploadActivity", "Observer结束");
                     }
                 });
     }

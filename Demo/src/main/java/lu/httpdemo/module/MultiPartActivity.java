@@ -17,9 +17,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import io.reactivex.Observer;
 import io.reactivex.annotations.NonNull;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import lu.httpdemo.R;
 import lu.httpdemo.util.BindView;
 import lu.httpdemo.util.InjectUtil;
@@ -90,6 +89,7 @@ public class MultiPartActivity extends AppCompatActivity {
 
         new MultiPartRequest()
                 .url("http://119.23.237.24:8080/demo/upload")
+                .addParam("key", "value")
                 .addFile("image", imageFile)
                 .addFile("image1", imageFile1)
                 .addFile("txt_file", txtFile)
@@ -101,26 +101,10 @@ public class MultiPartActivity extends AppCompatActivity {
                     }
                 })
                 .observerString()
-                .subscribe(new Observer<String>() {
+                .subscribe(new Consumer<String>() {
                     @Override
-                    public void onSubscribe(@NonNull Disposable d) {
-                        Log.d("FileUploadActivity", "Observer: 开始");
-                    }
-
-                    @Override
-                    public void onNext(@NonNull String s) {
+                    public void accept(@NonNull String s) throws Exception {
                         mResultView.setText(s);
-                        Log.d("FileUploadActivity", "Observer: " + s);
-                    }
-
-                    @Override
-                    public void onError(@NonNull Throwable e) {
-                        Log.d("FileUploadActivity", "e:" + e);
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        Log.d("FileUploadActivity", "Observer结束");
                     }
                 });
     }
