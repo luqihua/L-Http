@@ -194,4 +194,53 @@ new MultiFileUpRequest()
                 });
 
 ```
+# 封装json响应数据
 
+```
+//假设服务器返回的数据格式如下
+{
+"code":1,
+"msg":"success",
+"data":{"id":"1","name":"zhangsan"}
+}
+
+
+//在application中初始化
+/**
+ * 
+ * @param codeKey 对应json字符串中"code"
+ * @param msgKey  对应json字符串中"msg"
+ * @param dataKey 对应json字符串中"data"
+ * @param successCode 成功结果的code值
+ */
+RxHttp.setHttpTransformer(new HttpTransformer("code", "msg", "data", 1));
+
+
+//使用 如果希望对所有错误统一处理  直接重写observer的onError()方法即可
+//如果希望根据错误类型分开处理  如下所示
+ new FormRequest()
+                .url("")
+                .log(false)
+                .addParam("key", "value")
+                .observerResult()
+                .subscribe(new HttpObserver() {
+                    #请求成功的回到   data代表数据实体的json字符串 例如上面所示{"id":"1","name":"zhangsan"} msg是服务端响应的消息 例如“请求成功” 
+                    @Override
+                    protected void onSuccess(String data, String msg) {
+                        mResultView.setText("onSuccess:\n" + "data: " + data + "\nmsg: " + msg);
+                    }
+            
+                    # http出错  例如404 500 等情况的回调
+                    @Override
+                    protected void onHttpError(HttpException e) {
+                        super.onHttpError(e);
+                    }
+                
+                    # 服务器自定义错误码例如 -1 0 等情况
+                    @Override
+                    protected void onCustomError(int code, String msg) {
+                        mResultView.setText("onCustomError:  \ncode: " + code + "\nmsg: " + msg);
+                    }
+                });
+
+```
