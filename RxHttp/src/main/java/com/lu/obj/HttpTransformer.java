@@ -17,10 +17,13 @@ import io.reactivex.functions.Function;
 
 public class HttpTransformer implements ObservableTransformer<String, Result> {
 
+    public static final HttpTransformer DEFAULT_TRANSFORMER = new HttpTransformer("code", "msg", "data", 0);
+
     private int sSuccessCode = 0;
     private String sCodeKey = "code";
     private String sMsgKey = "msg";
     private String sDataKey = "data";
+
 
     public HttpTransformer(String codeKey, String msgKey, String dataKey, int successCode) {
         sCodeKey = codeKey;

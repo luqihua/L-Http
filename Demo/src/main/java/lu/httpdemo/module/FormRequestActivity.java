@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 
+import com.lu.obj.HttpException;
 import com.lu.obj.HttpObserver;
 import com.lu.request.FormRequest;
 
@@ -38,6 +39,11 @@ public class FormRequestActivity extends AppCompatActivity {
                     @Override
                     protected void onSuccess(String data, String msg) {
                         mResultView.setText("onSuccess:\n" + "data: " + data + "\nmsg: " + msg);
+                    }
+
+                    @Override
+                    protected void onHttpError(HttpException e) {
+                        super.onHttpError(e);
                     }
 
                     @Override
