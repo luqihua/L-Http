@@ -48,5 +48,6 @@ public class BaseApp extends Application {
 
         RxHttp.init(this, builder.build());
         RxHttp.setHttpTransformer(new HttpTransformer("code", "msg", "data", 1));
+
     }
 }
