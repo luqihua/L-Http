@@ -10,5 +10,4 @@ public class Result {
     int code;
     String msg;
     String data;
-    boolean isSuccess;
 }
