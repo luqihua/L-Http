@@ -24,7 +24,11 @@ public abstract class HttpObserver implements Observer<Result> {
 
     @Override
     public void onNext(@NonNull Result result) {
-        onSuccess(result.data, result.msg);
+        if (result.isSuccess) {
+            onSuccess(result.data, result.msg);
+        } else {
+            onError(new CustomException(result.code, result.msg));
+        }
         onAfter();
     }
 
@@ -68,6 +72,7 @@ public abstract class HttpObserver implements Observer<Result> {
 
     /**
      * response success
+     *
      * @param data
      * @param msg
      */

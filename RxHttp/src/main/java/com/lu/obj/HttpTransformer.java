@@ -33,7 +33,7 @@ public class HttpTransformer implements ObservableTransformer<String, Result> {
     }
 
     @Override
-    public ObservableSource<Result> apply(@NonNull Observable<String> upstream) {
+    public ObservableSource<Result> apply(@NonNull final Observable<String> upstream) {
         return upstream.map(new Function<String, Result>() {
             @Override
             public Result apply(@NonNull String s) throws Exception {
@@ -43,13 +43,9 @@ public class HttpTransformer implements ObservableTransformer<String, Result> {
                 result.code = object.getIntValue(sCodeKey);
                 result.msg = object.getString(sMsgKey);
                 result.data = object.getString(sDataKey);
+                result.isSuccess = result.code == sSuccessCode;
 
-                //the success code define by API server
-                if (result.code == sSuccessCode) {
-                    return result;
-                }
-                //if code != the success code , deal it as a custom exception onError();
-                throw new CustomException(result.code, result.msg);
+                return result;
             }
         });
     }
