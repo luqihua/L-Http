@@ -13,8 +13,10 @@ import com.lu.obj.HttpStatus;
 import com.lu.obj.Result;
 import com.lu.util.Const;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.util.Map;
 
 import io.reactivex.Observable;
@@ -178,6 +180,12 @@ public abstract class AbstractRequest<T> implements IRequest<T>, IExecute {
 
                 } catch (SocketTimeoutException e) {
                     HttpException exception = new HttpException(-1, "socket time out");
+                    emitter.onError(exception);
+                } catch (UnknownHostException e) {
+                    HttpException exception = new HttpException(-1, "host address wrong");
+                    emitter.onError(exception);
+                } catch (IOException e) {
+                    HttpException exception = new HttpException(-1, "IOException");
                     emitter.onError(exception);
                 } finally {
                     RxHttp.cancelCall(tag);
