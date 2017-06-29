@@ -2,10 +2,10 @@ package lu.httpdemo.module;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
-import com.lu.obj.HttpException;
 import com.lu.obj.HttpObserver;
 import com.lu.request.FormRequest;
 
@@ -40,15 +40,9 @@ public class FormRequestActivity extends AppCompatActivity {
                     protected void onSuccess(String data, String msg) {
                         mResultView.setText("onSuccess:\n" + "data: " + data + "\nmsg: " + msg);
                     }
-
                     @Override
-                    protected void onHttpError(HttpException e) {
-                        super.onHttpError(e);
-                    }
-
-                    @Override
-                    protected void onCustomError(int code, String msg) {
-                        mResultView.setText("onCustomError:  \ncode: " + code + "\nmsg: " + msg);
+                    public void onAfter() {
+                        Log.d("FormRequestActivity", "onAfter");
                     }
                 });
     }
