@@ -9,11 +9,13 @@ import com.lu.intercept.CacheIntercept;
 import com.lu.intercept.LogInterceptor;
 import com.lu.obj.HttpException;
 import com.lu.obj.HttpHeader;
+import com.lu.obj.HttpObserver;
 import com.lu.obj.HttpStatus;
 import com.lu.obj.Result;
 import com.lu.util.Const;
 
 import java.io.InputStream;
+import java.net.SocketTimeoutException;
 import java.util.Map;
 
 import io.reactivex.Observable;
@@ -175,8 +177,14 @@ public abstract class AbstractRequest<T> implements IRequest<T>, IExecute {
                         emitter.onError(exception);
                     }
 
+                } catch (SocketTimeoutException e) {
+                    HttpException exception = new HttpException(-1, "socket time out");
+                    emitter.onError(exception);
                 } finally {
                     RxHttp.cancelCall(tag);
+                    if (emitter instanceof HttpObserver) {
+                        ((HttpObserver) emitter).onAfter();
+                    }
                 }
             }
         });
