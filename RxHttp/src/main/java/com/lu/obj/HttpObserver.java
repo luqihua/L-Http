@@ -24,23 +24,31 @@ public abstract class HttpObserver implements Observer<Result> {
 
     @Override
     public void onNext(@NonNull Result result) {
-        onSuccess(result.data, result.msg);
+        try {
+            onSuccess(result.data, result.msg);
+        } finally {
+            onAfter();
+        }
     }
 
     @Override
     public void onError(@NonNull Throwable e) {
-        if (e instanceof HttpException) {
-            onHttpError((HttpException) e);
-            return;
-        }
+        try {
+            if (e instanceof HttpException) {
+                onHttpError((HttpException) e);
+                return;
+            }
 
-        if (e instanceof CustomException) {
-            CustomException customException = (CustomException) e;
-            onCustomError(customException.getCode(), customException.getMessage());
-            return;
-        }
+            if (e instanceof CustomException) {
+                CustomException customException = (CustomException) e;
+                onCustomError(customException.getCode(), customException.getMessage());
+                return;
+            }
 
-        throw new RuntimeException(e);
+            throw new RuntimeException(e);
+        } finally {
+            onAfter();
+        }
     }
 
     /**

@@ -9,7 +9,6 @@ import com.lu.intercept.CacheIntercept;
 import com.lu.intercept.LogInterceptor;
 import com.lu.obj.HttpException;
 import com.lu.obj.HttpHeader;
-import com.lu.obj.HttpObserver;
 import com.lu.obj.HttpStatus;
 import com.lu.obj.Result;
 import com.lu.util.Const;
@@ -182,9 +181,6 @@ public abstract class AbstractRequest<T> implements IRequest<T>, IExecute {
                     emitter.onError(exception);
                 } finally {
                     RxHttp.cancelCall(tag);
-                    if (emitter instanceof HttpObserver) {
-                        ((HttpObserver) emitter).onAfter();
-                    }
                 }
             }
         });
