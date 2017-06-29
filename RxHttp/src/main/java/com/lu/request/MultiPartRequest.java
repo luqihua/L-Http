@@ -69,7 +69,7 @@ public class MultiPartRequest extends AbstractRequest<MultiPartRequest> {
             for (Map.Entry<String, File> entry : mFileData.entrySet()) {
                 String key = entry.getKey();//服务器接收文件的key
                 File file = entry.getValue();//文件
-                String fileName = file.getName().split("\\.")[0];//文件名  这个参数默认是文件的名称
+                String fileName = file.getName();//文件名  这个参数默认是文件的名称
 
                 RequestBody body = RequestBody
                         .create(MediaType.parse(HttpUtil.getMimeTypeFromFile(file)), file);

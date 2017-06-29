@@ -25,20 +25,22 @@ public abstract class HttpObserver implements Observer<Result> {
     @Override
     public void onNext(@NonNull Result result) {
         onSuccess(result.data, result.msg);
-        onAfter();
     }
 
     @Override
     public void onError(@NonNull Throwable e) {
-        onAfter();
         if (e instanceof HttpException) {
             onHttpError((HttpException) e);
-        } else if (e instanceof CustomException) {
+            return;
+        }
+
+        if (e instanceof CustomException) {
             CustomException customException = (CustomException) e;
             onCustomError(customException.getCode(), customException.getMessage());
-        } else {
-            throw new RuntimeException(e);
+            return;
         }
+
+        throw new RuntimeException(e);
     }
 
     /**
@@ -62,12 +64,13 @@ public abstract class HttpObserver implements Observer<Result> {
     /**
      * after request done
      */
-    protected void onAfter() {
+    public void onAfter() {
 
     }
 
     /**
      * response success
+     *
      * @param data
      * @param msg
      */
