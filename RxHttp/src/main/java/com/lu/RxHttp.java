@@ -1,19 +1,16 @@
 package com.lu;
 
-import android.content.Context;
-import android.os.Environment;
+import android.support.annotation.NonNull;
 
 import com.lu.obj.HttpHeader;
 import com.lu.obj.HttpTransformer;
-import com.lu.util.Const;
+import com.lu.util.HttpsFactory;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
-import io.reactivex.annotations.NonNull;
-import okhttp3.Cache;
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
 
@@ -26,42 +23,36 @@ import okhttp3.OkHttpClient;
 public class RxHttp {
 
     private static OkHttpClient sClient;
-    private static HttpHeader sHeader = new HttpHeader();
-    private static ConcurrentHashMap<String, List<Call>> sWorkList = new ConcurrentHashMap<>();
+    private static HttpHeader sHeader;
     private static HttpTransformer sHttpTransformer;
+    private static ConcurrentHashMap<String, List<Call>> sWorkList = new ConcurrentHashMap<>();
 
-    public static void init(Context context) {
-        init(context, null);
-    }
 
-    public static void init(Context context, OkHttpClient client) {
-        init(context, client, null);
-    }
-
-    public static void init(Context context, OkHttpClient client, HttpHeader header) {
-        if (context == null) {
-            throw new RuntimeException("RxHttp.init() context must not be null");
+    public static void init(@NonNull HttpOptions options) {
+        if (options==null){
+            options = new HttpOptions();
         }
-
-        sHeader = header;
-
-        sClient = client;
-
-        if (sClient == null) {
-            sClient = new OkHttpClient();
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        builder.connectTimeout(options.getConnectTimeOut(), TimeUnit.MILLISECONDS);
+        builder.readTimeout(options.getReadTimeOut(), TimeUnit.MILLISECONDS);
+        //设置缓存目录
+        if (options.getCache() != null) {
+            builder.cache(options.getCache());
         }
-
-        if (sClient.cache() == null) {
-            Cache cache = createCache(context);
-            if (cache != null) {
-                sClient = sClient.newBuilder().cache(cache).build();
-            }
+        builder.interceptors().addAll(options.getInterceptors());
+        builder.networkInterceptors().addAll(options.getNetworkInterceptors());
+        //持久化cookie
+        if (options.getCookieJar()!=null) {
+            builder.cookieJar(options.getCookieJar());
         }
-    }
-
-
-    public static void setHttpTransformer(HttpTransformer sHttpTransformer) {
-        RxHttp.sHttpTransformer = sHttpTransformer;
+        //加入https证书
+        if (options.getHttpsFactory() != null) {
+            HttpsFactory factory = options.getHttpsFactory();
+            builder.sslSocketFactory(factory.getSslSocketFactory(), factory.getX509TrustManager());
+        }
+        sClient = builder.build();
+        sHeader = options.getPublicHeaders();
+        sHttpTransformer = options.getHttpTransformer();
     }
 
     /**
@@ -84,30 +75,15 @@ public class RxHttp {
         return sClient;
     }
 
-
-    public static HttpTransformer getTransformer() {
-        return sHttpTransformer;
-    }
-
     /**
-     * default cache config
      *
-     * @param context
-     * @return
+     * @return HttpTransformer
      */
-    private static Cache createCache(@NonNull Context context) {
-        File file = null;
-        if (context != null) {
-            file = new File(context.getExternalCacheDir(), Const.HTTP_CACHE_DIR);
-        } else {
-            if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-                file = new File(Environment.getExternalStorageDirectory(), Const.HTTP_CACHE_DIR);
-            }
+    public static HttpTransformer getTransformer() {
+        if (sHttpTransformer==null){
+            sHttpTransformer = HttpTransformer.DEFAULT_TRANSFORMER;
         }
-        if (file != null) {
-            return new Cache(file, Const.MAX_CACHE_SIZE);
-        }
-        return null;
+        return sHttpTransformer;
     }
 
     /**

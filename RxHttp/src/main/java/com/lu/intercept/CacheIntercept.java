@@ -15,7 +15,7 @@ import okhttp3.Response;
 
 public class CacheIntercept implements Interceptor {
 
-    private String mCCMessage = "max-age=60";
+    private String mCCMessage = "max-age=600";
 
     public CacheIntercept(String cacheControl) {
         if (!TextUtils.isEmpty(cacheControl)) {

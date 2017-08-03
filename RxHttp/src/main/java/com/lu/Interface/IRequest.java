@@ -3,6 +3,8 @@ package com.lu.Interface;
 import com.lu.util.Const;
 
 import okhttp3.CacheControl;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 
 /**
  * Author: luqihua
@@ -26,5 +28,8 @@ public interface IRequest<T> {
 
     T forceCache(String forceCache);
 
+    Request getRequest();
+
+    OkHttpClient getClient();
 
 }

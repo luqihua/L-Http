@@ -64,8 +64,7 @@ public class FormRequest extends AbstractRequest<FormRequest> {
 
     @Override
     protected Request createRequest() {
-        Request.Builder builder = new Request.Builder()
-                .url(mUrl);
+        Request.Builder builder = new Request.Builder().url(mUrl);
         /*添加请求参数*/
         if (mParams != null && mParams.size() > 0) {
             if (mMethod.equals(Const.GET)) {

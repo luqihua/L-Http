@@ -15,8 +15,6 @@ import com.lu.util.Const;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
 import java.util.Map;
 
 import io.reactivex.Observable;
@@ -177,15 +175,8 @@ public abstract class AbstractRequest<T> implements IRequest<T>, IExecute {
                         HttpException exception = new HttpException(status.code, status.description);
                         emitter.onError(exception);
                     }
-
-                } catch (SocketTimeoutException e) {
-                    HttpException exception = new HttpException(-1, "socket time out");
-                    emitter.onError(exception);
-                } catch (UnknownHostException e) {
-                    HttpException exception = new HttpException(-1, "host address wrong");
-                    emitter.onError(exception);
                 } catch (IOException e) {
-                    HttpException exception = new HttpException(-1, "IOException");
+                    HttpException exception = new HttpException(-1, e.toString());
                     emitter.onError(exception);
                 } finally {
                     RxHttp.cancelCall(tag);
@@ -196,14 +187,13 @@ public abstract class AbstractRequest<T> implements IRequest<T>, IExecute {
 
     @Override
     public Observable<String> observerString() {
-        return observerResponse().map(new Function<Response, String>() {
-            @Override
-            public String apply(@NonNull Response response) throws Exception {
-                return response.body().string();
-            }
-        })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
+        return observerResponse()
+                .map(new Function<Response, String>() {
+                    @Override
+                    public String apply(@NonNull Response response) throws Exception {
+                        return response.body().string();
+                    }
+                });
     }
 
     @Override
@@ -219,10 +209,7 @@ public abstract class AbstractRequest<T> implements IRequest<T>, IExecute {
     /**
      * @return
      */
-    public Observable<Result> observerResult() {
-        if (RxHttp.getTransformer() == null) {
-            throw new RuntimeException("please call RxHttp.setHttpTransformer() to add a HttpTransFormer");
-        }
+    public Observable<Result> observerData() {
         return observerResponse()
                 .map(new Function<Response, String>() {
                     @Override

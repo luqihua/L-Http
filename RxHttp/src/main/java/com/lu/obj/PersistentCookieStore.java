@@ -2,6 +2,7 @@ package com.lu.obj;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -22,29 +23,40 @@ import okhttp3.HttpUrl;
 
 public class PersistentCookieStore {
     private static final String LOG_TAG = "PersistentCookieStore";
-    private static final String COOKIE_PREFS = "Cookies_Prefs";
+    private static final String COOKIE_PREFS_HOST = "Cookies_host";
+    private static final String COOKIE_PREFS_OBJECT = "Cookies_object";
 
     private final Map<String, ConcurrentHashMap<String, Cookie>> cookies;
-    private final SharedPreferences cookiePrefs;
+    private final SharedPreferences mHostPrefs;//host-cookieName的文件
+    private final SharedPreferences mObjectPrefs;//cookieName-cookie的文件
 
 
-    public PersistentCookieStore(Context context) {
-        cookiePrefs = context.getSharedPreferences(COOKIE_PREFS, 0);
+    public PersistentCookieStore(@NonNull Context context) {
+        if (context == null) {
+            throw new RuntimeException("the context must not be null for PersistentCookieStore");
+        }
+        mHostPrefs = context.getSharedPreferences(COOKIE_PREFS_HOST, Context.MODE_PRIVATE);
+        mObjectPrefs = context.getSharedPreferences(COOKIE_PREFS_OBJECT, Context.MODE_PRIVATE);
         cookies = new HashMap<>();
-
-        //load local cookies
-        Map<String, ?> prefsMap = cookiePrefs.getAll();
+        //取出所有host对应的cookieName字符串
+        Map<String, ?> prefsMap = mHostPrefs.getAll();
         for (Map.Entry<String, ?> entry : prefsMap.entrySet()) {
-            String[] cookieNames = TextUtils.split((String) entry.getValue(), ",");
+            final String key = entry.getKey();
+            final String value = (String) entry.getValue();
+            //解析当前host所有的cookieName
+            String[] cookieNames = TextUtils.split(value, ",");
+
             for (String name : cookieNames) {
-                String encodedCookie = cookiePrefs.getString(name, null);
-                if (encodedCookie != null) {
-                    Cookie decodedCookie = decodeCookie(encodedCookie);
-                    if (decodedCookie != null) {
-                        if (!cookies.containsKey(entry.getKey())) {
-                            cookies.put(entry.getKey(), new ConcurrentHashMap<String, Cookie>());
+                //通过cookieName找到对应的cookie对象字符串
+                String cookieStr = mObjectPrefs.getString(name, null);
+                if (cookieStr != null) {
+                    //反序列化加载cookie到内存中并添加到cookies中
+                    Cookie cookie = decodeCookie(cookieStr);
+                    if (cookie != null) {
+                        if (!cookies.containsKey(key)) {
+                            cookies.put(key, new ConcurrentHashMap<String, Cookie>());
                         }
-                        cookies.get(entry.getKey()).put(name, decodedCookie);
+                        cookies.get(key).put(name, cookie);
                     }
                 }
             }
@@ -55,58 +67,63 @@ public class PersistentCookieStore {
         return cookie.name() + "@" + cookie.domain();
     }
 
+    //添加单个cookie
     public void add(HttpUrl url, Cookie cookie) {
         String name = getCookieToken(cookie);
-
+        final String host = url.host();
         //将cookies缓存到内存中 如果缓存过期 就重置此cookie
         if (!cookie.persistent()) {
-            if (!cookies.containsKey(url.host())) {
-                cookies.put(url.host(), new ConcurrentHashMap<String, Cookie>());
+            if (!cookies.containsKey(host)) {
+                cookies.put(host, new ConcurrentHashMap<String, Cookie>());
             }
-            cookies.get(url.host()).put(name, cookie);
+            cookies.get(host).put(name, cookie);
         } else {
-            if (cookies.containsKey(url.host())) {
-                cookies.get(url.host()).remove(name);
+            if (cookies.containsKey(host)) {
+                cookies.get(host).remove(name);
             }
         }
 
         //讲cookies持久化到本地
-        SharedPreferences.Editor prefsWriter = cookiePrefs.edit();
-        if (cookies.get(url.host()) != null) {
-            prefsWriter.putString(url.host(), TextUtils.join(",", cookies.get(url.host()).keySet()));
-            prefsWriter.putString(name, encodeCookie(new SerializableCookies(cookie)));
-            prefsWriter.apply();
+        if (cookies.get(host) != null) {
+            //将host对应的所有cookie名称用","拼接保存起来 保存关系为  hots-cookieName
+            mHostPrefs.edit().putString(host, TextUtils.join(",", cookies.get(host).keySet())).apply();
+            //将cookie序列化成字符串,保存关系为 cookieName-cookie
+            mObjectPrefs.edit().putString(name, encodeCookie(new SerializableCookies(cookie))).apply();
         }
-
     }
 
     public List<Cookie> get(HttpUrl url) {
         ArrayList<Cookie> ret = new ArrayList<>();
-        if (cookies.containsKey(url.host()))
+        if (cookies.containsKey(url.host())) {
             ret.addAll(cookies.get(url.host()).values());
+        }
         return ret;
     }
 
     public boolean removeAll() {
-        SharedPreferences.Editor prefsWriter = cookiePrefs.edit();
-        prefsWriter.clear();
-        prefsWriter.apply();
+        mHostPrefs.edit().clear().apply();
+        mObjectPrefs.edit().clear().apply();
         cookies.clear();
         return true;
     }
 
     public boolean remove(HttpUrl url, Cookie cookie) {
-        String name = getCookieToken(cookie);
+        final String host = url.host();
+        final String name = getCookieToken(cookie);
 
-        if (cookies.containsKey(url.host()) && cookies.get(url.host()).containsKey(name)) {
-            cookies.get(url.host()).remove(name);
+        Map<String, Cookie> cookieMap = cookies.get(host);
 
-            SharedPreferences.Editor prefsWriter = cookiePrefs.edit();
-            if (cookiePrefs.contains(name)) {
-                prefsWriter.remove(name);
+        if (cookieMap != null && cookieMap.containsKey(name)) {
+            //移除cookieName
+            cookieMap.remove(name);
+            //重新拼接所有的cookieName
+            final String cookieNames = TextUtils.join(",", cookies.get(url.host()).keySet());
+
+            mHostPrefs.edit().putString(host, cookieNames).apply();
+
+            if (mObjectPrefs.contains(name)) {
+                mObjectPrefs.edit().remove(name).apply();
             }
-            prefsWriter.putString(url.host(), TextUtils.join(",", cookies.get(url.host()).keySet()));
-            prefsWriter.apply();
 
             return true;
         } else {

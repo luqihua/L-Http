@@ -43,12 +43,12 @@ public class FileStorageUtil {
         File file;
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             file = new File(Environment.getExternalStorageDirectory()
-                    .getAbsoluteFile(), rootDir);
+                    .getAbsolutePath(), rootDir);
         } else {
             if (mContext == null) {
                 throw new RuntimeException("please init FileStorageUtil first");
             } else {
-                file = new File(mContext.getCacheDir().getAbsoluteFile(), rootDir);
+                file = new File(mContext.getCacheDir().getAbsolutePath(), rootDir);
             }
         }
 

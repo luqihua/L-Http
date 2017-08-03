@@ -2,8 +2,6 @@ package com.lu.http;
 
 import org.junit.Test;
 
-import java.util.concurrent.atomic.AtomicLong;
-
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -12,9 +10,6 @@ import static org.junit.Assert.assertEquals;
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
 public class ExampleUnitTest {
-
-
-    private AtomicLong atomicLong;
 
     @Test
     public void addition_isCorrect() throws Exception {
