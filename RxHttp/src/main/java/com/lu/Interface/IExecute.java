@@ -15,9 +15,7 @@ import okhttp3.Response;
 
 public interface IExecute {
 
-    Request getRequest();
 
-    OkHttpClient getClient();
 
     Observable<Response> observerResponse();
 

@@ -81,7 +81,7 @@ public class FileUploadActivity extends AppCompatActivity {
 
             Toast.makeText(this, "写入成功", Toast.LENGTH_SHORT).show();
         } catch (IOException e) {
-            e.printStackTrace();
+            Toast.makeText(this, e.toString(), Toast.LENGTH_SHORT).show();
         }
     }
 

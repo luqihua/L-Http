@@ -48,7 +48,6 @@ public class HttpTransformer implements ObservableTransformer<String, Result> {
                         if (result.code != sSuccessCode){
                             return Observable.error(new CustomException(result.code, result.msg));
                         }
-
                         return Observable.just(result);
                     }
                 });

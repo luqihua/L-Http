@@ -2,17 +2,13 @@ package lu.httpdemo.app;
 
 import android.app.Application;
 
+import com.lu.HttpOptions;
 import com.lu.RxHttp;
+import com.lu.obj.CookieJarImp;
 import com.lu.obj.HttpTransformer;
+import com.lu.obj.OkCache;
 import com.lu.util.FileStorageUtil;
 import com.lu.util.HttpsFactory;
-
-import java.io.IOException;
-import java.util.concurrent.TimeUnit;
-
-import javax.net.ssl.SSLSocketFactory;
-
-import okhttp3.OkHttpClient;
 
 /**
  * Author: luqihua
@@ -30,24 +26,17 @@ public class BaseApp extends Application {
 
     private void initHttp() {
         FileStorageUtil.getInstance().init(this);
-        OkHttpClient.Builder builder = null;
         try {
-            builder = new OkHttpClient.Builder()
-                    .connectTimeout(10, TimeUnit.SECONDS)
-                    .readTimeout(10, TimeUnit.SECONDS);
-
-            //https证书添加 以12306为例子
-            SSLSocketFactory sslSocketFactory = HttpsFactory.getSSLSocketFactory(getAssets().open("srca12306.cer"));
-            if (sslSocketFactory != null) {
-                builder.sslSocketFactory(sslSocketFactory, HttpsFactory.sTrustManager);
-            }
-
-        } catch (IOException e) {
+            RxHttp.init(new HttpOptions()
+                    .connectTimeOut(10000)
+                    .readTimeOut(10000)
+                    .cache(new OkCache(this))
+                    .httpTransformer(new HttpTransformer("code", "msg", "data", 1))
+                    .cookieJar(new CookieJarImp(this))
+                    .httpsFactory(new HttpsFactory(getAssets().open("srca12306.cer")))
+            );
+        } catch (Exception e) {
             e.printStackTrace();
         }
-
-        RxHttp.init(this, builder.build());
-        RxHttp.setHttpTransformer(new HttpTransformer("code", "msg", "data", 1));
-
     }
 }
