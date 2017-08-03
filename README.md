@@ -9,14 +9,14 @@ okHttp+RxJava的简单封装
 <dependency>
   <groupId>com.lu.lib</groupId>
   <artifactId>RxHttp</artifactId>
-  <version>1.0.1</version>
+  <version>1.0.4</version>
   <type>pom</type>
 </dependency>
 ```
 
 > gradle引入
 ```
-compile 'com.lu.lib:RxHttp:1.0.1'
+compile 'com.lu.lib:RxHttp:1.0.4'
 ```
 
 # 使用说明
@@ -24,16 +24,29 @@ compile 'com.lu.lib:RxHttp:1.0.1'
 
 > 初始化
 ```
-//在项目的application中调用，使用默认的OkHttpClient
- RxHttp.init(this);
-//或者OkHttpClient 
-RxHttp.init(this,new OkHttpClient());
+//在项目的application中初始化
+ RxHttp.init(new HttpOptions()
+                    .connectTimeOut(10000)
+                    .readTimeOut(10000)
+                    //拦截器
+                    .networkInterceptors(new ArrayList<Interceptor>())
+                    .interceptors(new ArrayList<Interceptor>())
+                    //所有请求的公共头
+                    .publicHeaders(new HttpHeader())
+                    //添加缓存
+                    .cache(new OkCache(this))
+                    //解析http返回
+                    .httpTransformer(new HttpTransformer("code", "msg", "data", 1))
+                    //管理cookie持久化
+                    .cookieJar(new CookieJarImp(this))
+                    //添加证书
+                    .httpsFactory(new HttpsFactory(getAssets().open("srca12306.cer"))));
 
 ```
 
 > 所有的请求都提供了三个方法 
 ```
-# 该方法内部网络请求在IO线程，订阅回调切换到了主线程
+# 回调在IO线程
 observerString()
 
 # 该方法默认是在主线程运行，可以自己通过RxJava的 subscribeOn()和observeOn() 变换线程
@@ -199,9 +212,9 @@ new MultiFileUpRequest()
 ```
 //假设服务器返回的数据格式如下
 {
-"code":1,
-"msg":"success",
-"data":{"id":"1","name":"zhangsan"}
+"code":1,//正确的响应码
+"msg":"success",//提示信息
+"data":{"id":"1","name":"zhangsan"}//实体数据
 }
 
 
@@ -213,7 +226,8 @@ new MultiFileUpRequest()
  * @param dataKey 对应json字符串中"data"
  * @param successCode 成功结果的code值
  */
-RxHttp.setHttpTransformer(new HttpTransformer("code", "msg", "data", 1));
+  RxHttp.init(new HttpOptions()
+                    .httpTransformer(new HttpTransformer("code", "msg", "data", 1)));
 
 
 //使用 如果希望对所有错误统一处理  直接重写observer的onError()方法即可
@@ -222,7 +236,7 @@ RxHttp.setHttpTransformer(new HttpTransformer("code", "msg", "data", 1));
                 .url("")
                 .log(false)
                 .addParam("key", "value")
-                .observerResult()
+                .observerData()
                 .subscribe(new HttpObserver() {
                     #请求成功的回到   data代表数据实体的json字符串 例如上面所示{"id":"1","name":"zhangsan"} msg是服务端响应的消息 例如“请求成功” 
                     @Override
@@ -244,3 +258,4 @@ RxHttp.setHttpTransformer(new HttpTransformer("code", "msg", "data", 1));
                 });
 
 ```
+
