@@ -11,6 +11,7 @@ import java.util.List;
 import okhttp3.Cache;
 import okhttp3.CookieJar;
 import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
 
 /**
  * Author: luqihua
@@ -28,7 +29,7 @@ public class HttpOptions {
     private List<Interceptor> mInterceptors;
     private CookieJar mCookieJar;
     private HttpsFactory mHttpsFactory;
-
+    private OkHttpClient mClient;
 
     public HttpOptions connectTimeOut(int connectTimeOut) {
         this.mConnectTimeOut = connectTimeOut;
@@ -74,7 +75,6 @@ public class HttpOptions {
         this.mHttpsFactory = factory;
         return this;
     }
-
     /**/
 
     public int getConnectTimeOut() {

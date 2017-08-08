@@ -5,10 +5,15 @@ import android.app.Application;
 import com.lu.HttpOptions;
 import com.lu.RxHttp;
 import com.lu.obj.CookieJarImp;
+import com.lu.obj.HttpHeader;
 import com.lu.obj.HttpTransformer;
 import com.lu.obj.OkCache;
 import com.lu.util.FileStorageUtil;
 import com.lu.util.HttpsFactory;
+
+import java.util.ArrayList;
+
+import okhttp3.Interceptor;
 
 /**
  * Author: luqihua
@@ -30,11 +35,19 @@ public class BaseApp extends Application {
             RxHttp.init(new HttpOptions()
                     .connectTimeOut(10000)
                     .readTimeOut(10000)
+                    //拦截器
+                    .networkInterceptors(new ArrayList<Interceptor>())
+                    .interceptors(new ArrayList<Interceptor>())
+                    //所有请求的公共头
+                    .publicHeaders(new HttpHeader())
+                    //添加缓存
                     .cache(new OkCache(this))
+                    //解析http返回
                     .httpTransformer(new HttpTransformer("code", "msg", "data", 1))
+                    //管理cookie持久化
                     .cookieJar(new CookieJarImp(this))
-                    .httpsFactory(new HttpsFactory(getAssets().open("srca12306.cer")))
-            );
+                    //添加证书
+                    .httpsFactory(new HttpsFactory(getAssets().open("srca12306.cer"))));
         } catch (Exception e) {
             e.printStackTrace();
         }

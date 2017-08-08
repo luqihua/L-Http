@@ -27,9 +27,14 @@ public class RxHttp {
     private static HttpTransformer sHttpTransformer;
     private static ConcurrentHashMap<String, List<Call>> sWorkList = new ConcurrentHashMap<>();
 
+    public static void init(OkHttpClient client, HttpHeader header, HttpTransformer transformer) {
+        sClient = client;
+        sHeader = header;
+        sHttpTransformer = transformer;
+    }
 
     public static void init(@NonNull HttpOptions options) {
-        if (options==null){
+        if (options == null) {
             options = new HttpOptions();
         }
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
@@ -42,7 +47,7 @@ public class RxHttp {
         builder.interceptors().addAll(options.getInterceptors());
         builder.networkInterceptors().addAll(options.getNetworkInterceptors());
         //持久化cookie
-        if (options.getCookieJar()!=null) {
+        if (options.getCookieJar() != null) {
             builder.cookieJar(options.getCookieJar());
         }
         //加入https证书
@@ -76,11 +81,10 @@ public class RxHttp {
     }
 
     /**
-     *
      * @return HttpTransformer
      */
     public static HttpTransformer getTransformer() {
-        if (sHttpTransformer==null){
+        if (sHttpTransformer == null) {
             sHttpTransformer = HttpTransformer.DEFAULT_TRANSFORMER;
         }
         return sHttpTransformer;
