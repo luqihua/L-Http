@@ -17,7 +17,7 @@ public class FileStorageUtil {
 
     private String mAppCacheDir = "";
     private String rootDir = "tmp";
-
+    private boolean hasInitialize = false;
 
     private FileStorageUtil() {
     }
@@ -31,8 +31,11 @@ public class FileStorageUtil {
     }
 
     public void init(Context context) {
-        this.rootDir = context.getPackageName();
-        this.mAppCacheDir = context.getCacheDir().getAbsolutePath();
+        if (!hasInitialize) {
+            hasInitialize = true;
+            this.rootDir = context.getPackageName();
+            this.mAppCacheDir = context.getCacheDir().getAbsolutePath();
+        }
     }
 
     /**
@@ -41,6 +44,10 @@ public class FileStorageUtil {
      * @return
      */
     public File getAppRootFile() {
+
+        if (!hasInitialize) {
+            throw new RuntimeException("please invoke FileStorageUtil.getInstance().init(context) first");
+        }
         File file = null;
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             file = new File(Environment.getExternalStorageDirectory()

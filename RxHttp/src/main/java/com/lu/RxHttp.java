@@ -33,7 +33,7 @@ public class RxHttp {
     private static HttpHeader sHeader;
     private static HttpTransformer sHttpTransformer;
     private static ConcurrentHashMap<String, List<Call>> sWorkList = new ConcurrentHashMap<>();
-    private static Executor sWorkingThreadpool;
+    private static Executor sWorkingThreadPool;
 
     public static void init(OkHttpClient client, HttpHeader header, HttpTransformer transformer) {
         sClient = client;
@@ -66,7 +66,7 @@ public class RxHttp {
         sClient = builder.build();
         sHeader = options.getPublicHeaders();
         sHttpTransformer = options.getHttpTransformer();
-        sWorkingThreadpool = options.getWorkingThreadPool();
+        sWorkingThreadPool = options.getWorkingThreadPool();
     }
 
     /**
@@ -100,9 +100,9 @@ public class RxHttp {
     }
 
 
-    public static Executor getWorkingThreadpool() {
-        if (sWorkingThreadpool == null) {
-            sWorkingThreadpool = new ThreadPoolExecutor(
+    public static Executor getWorkingThreadPool() {
+        if (sWorkingThreadPool == null) {
+            sWorkingThreadPool = new ThreadPoolExecutor(
                     Const.MAX_CORE_THREAD_NUM,
                     Const.MAX_THREAD_NUM,
                     10, TimeUnit.SECONDS,
@@ -116,7 +116,7 @@ public class RxHttp {
                         }
                     });
         }
-        return sWorkingThreadpool;
+        return sWorkingThreadPool;
     }
 
     /**
