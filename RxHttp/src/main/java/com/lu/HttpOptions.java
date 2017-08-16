@@ -77,7 +77,7 @@ public class HttpOptions {
         return this;
     }
 
-    public HttpOptions WorkingThreadPool(Executor threadPool) {
+    public HttpOptions workingThreadPool(Executor threadPool) {
         this.mWorkingThreadPool = threadPool;
         return this;
     }

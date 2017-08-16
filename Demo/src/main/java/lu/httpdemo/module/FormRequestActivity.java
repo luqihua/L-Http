@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 
+import com.lu.obj.HttpObserver;
 import com.lu.obj.JsonTransformer;
 import com.lu.request.FormRequest;
 
@@ -68,11 +69,11 @@ public class FormRequestActivity extends AppCompatActivity {
                 .log(true)
                 .addParam("username", "luqihua")
                 .addParam("password", "helloworld")
-                .observerString()
-                .subscribe(new Consumer<String>() {
+                .observerData()
+                .subscribe(new HttpObserver() {
                     @Override
-                    public void accept(@NonNull String s) throws Exception {
-                        mResultView.setText(s);
+                    protected void onSuccess(String data, String msg) {
+
                     }
                 });
     }

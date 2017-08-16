@@ -12,6 +12,9 @@ import com.lu.util.FileStorageUtil;
 import com.lu.util.HttpsFactory;
 
 import java.util.ArrayList;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Interceptor;
 
@@ -46,6 +49,8 @@ public class BaseApp extends Application {
                     .httpTransformer(new HttpTransformer("code", "msg", "data", 1))
                     //管理cookie持久化
                     .cookieJar(new CookieJarImp(this))
+                    //自定义工作线程池
+                    .workingThreadPool(new ThreadPoolExecutor(3, 5, 1, TimeUnit.SECONDS, new LinkedBlockingDeque<Runnable>()))
                     //添加证书
                     .httpsFactory(new HttpsFactory(getAssets().open("srca12306.cer"))));
         } catch (Exception e) {
