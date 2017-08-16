@@ -13,6 +13,10 @@ import java.lang.annotation.RetentionPolicy;
 
 public class Const {
     public static final int MAX_CACHE_SIZE = 10 * 1024 * 1024;
+    public static final int MAX_CORE_THREAD_NUM = Runtime.getRuntime().availableProcessors() / 2 + 1;
+    public static final int MAX_THREAD_NUM = Runtime.getRuntime().availableProcessors() + 1;
+
+
     public static final String HTTP_CACHE_DIR = "okcache";
 
     public static final String GET = "GET";
@@ -24,7 +28,6 @@ public class Const {
     @Retention(RetentionPolicy.SOURCE)
     public @interface HttpMethod {
     }
-
 
 
 }
