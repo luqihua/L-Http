@@ -9,14 +9,14 @@ okHttp+RxJava的简单封装
 <dependency>
   <groupId>com.lu.lib</groupId>
   <artifactId>RxHttp</artifactId>
-  <version>1.0.4</version>
+  <version>1.1.0</version>
   <type>pom</type>
 </dependency>
 ```
 
 > gradle引入
 ```
-compile 'com.lu.lib:RxHttp:1.0.4'
+compile 'com.lu.lib:RxHttp:1.1.0'
 ```
 
 # 使用说明
@@ -25,7 +25,7 @@ compile 'com.lu.lib:RxHttp:1.0.4'
 > 初始化
 ```
 //在项目的application中初始化
- RxHttp.init(new HttpOptions()
+  RxHttp.init(new HttpOptions()
                     .connectTimeOut(10000)
                     .readTimeOut(10000)
                     //拦截器
@@ -39,6 +39,8 @@ compile 'com.lu.lib:RxHttp:1.0.4'
                     .httpTransformer(new HttpTransformer("code", "msg", "data", 1))
                     //管理cookie持久化
                     .cookieJar(new CookieJarImp(this))
+                    //自定义工作线程池
+                    .WorkingThreadPool(new ThreadPoolExecutor(3, 5, 1, TimeUnit.SECONDS, new LinkedBlockingDeque<Runnable>()))
                     //添加证书
                     .httpsFactory(new HttpsFactory(getAssets().open("srca12306.cer"))));
 
@@ -46,7 +48,7 @@ compile 'com.lu.lib:RxHttp:1.0.4'
 
 > 所有的请求都提供了三个方法 
 ```
-# 回调在IO线程
+# 该方法默认是在主线程运行
 observerString()
 
 # 该方法默认是在主线程运行，可以自己通过RxJava的 subscribeOn()和observeOn() 变换线程
@@ -54,6 +56,9 @@ observerResponse()
 
 # 运行线程同observerResponse()
 observerStream()
+
+# 网络访问在线程池，回调在主线程
+observerData()
 
 # 该方法用于监控进度  在主线程
 progress(new ProgressCallBack(){})
@@ -258,4 +263,3 @@ new MultiFileUpRequest()
                 });
 
 ```
-
