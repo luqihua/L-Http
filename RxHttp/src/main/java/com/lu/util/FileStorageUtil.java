@@ -2,6 +2,7 @@ package com.lu.util;
 
 import android.content.Context;
 import android.os.Environment;
+import android.text.TextUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,7 +15,7 @@ import java.io.IOException;
 
 public class FileStorageUtil {
 
-    private Context mContext;
+    private String mAppCacheDir = "";
     private String rootDir = "tmp";
 
 
@@ -30,8 +31,8 @@ public class FileStorageUtil {
     }
 
     public void init(Context context) {
-        this.mContext = context;
-        this.rootDir = mContext.getPackageName();
+        this.rootDir = context.getPackageName();
+        this.mAppCacheDir = context.getCacheDir().getAbsolutePath();
     }
 
     /**
@@ -40,19 +41,17 @@ public class FileStorageUtil {
      * @return
      */
     public File getAppRootFile() {
-        File file;
+        File file = null;
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             file = new File(Environment.getExternalStorageDirectory()
                     .getAbsolutePath(), rootDir);
         } else {
-            if (mContext == null) {
-                throw new RuntimeException("please init FileStorageUtil first");
-            } else {
-                file = new File(mContext.getCacheDir().getAbsolutePath(), rootDir);
+            if (!TextUtils.isEmpty(mAppCacheDir)) {
+                file = new File(mAppCacheDir, rootDir);
             }
         }
 
-        if (!file.exists()) {
+        if (file != null && !file.exists()) {
             file.mkdirs();
         }
         return file;

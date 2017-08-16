@@ -218,7 +218,7 @@ public abstract class AbstractRequest<T> implements IRequest<T>, IExecute {
                     }
                 })
                 .compose(RxHttp.getTransformer())
-                .subscribeOn(Schedulers.io())
+                .subscribeOn(Schedulers.from(RxHttp.getWorkingThreadpool()))
                 .observeOn(AndroidSchedulers.mainThread());
     }
 

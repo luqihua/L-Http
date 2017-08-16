@@ -43,16 +43,16 @@ apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
 //项目主页--项目的GitHub地址
-def siteUrl = 'https://github.com/luqihua/HttpStudio'
+def siteUrl = 'https://github.com/luqihua/RxHttp'
 //项目的git地址
-def gitUrl = 'git@github.com:luqihua/HttpStudio.git'
+def gitUrl = 'git@github.com:luqihua/RxHttp.git'
 
 //发布到JCenter上的项目名字，compile引用时的第2部分项目名
 def libName = "rxhttp"
 //compile引用时的第1部分
 group = "com.lu.lib"
 // 版本号，//compile引用时的最后部分项目名，下次更新是只需要更改版本号即可
-version = "1.0.4"
+version = "1.1.0"
 //上面配置后上传至JCenter后的编译路径是这样的： compile 'com.lu.lib:rxhttp:1.0.0'
 
 //生成源文件

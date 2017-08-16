@@ -7,6 +7,7 @@ import com.lu.util.HttpsFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executor;
 
 import okhttp3.Cache;
 import okhttp3.CookieJar;
@@ -28,6 +29,7 @@ public class HttpOptions {
     private List<Interceptor> mInterceptors;
     private CookieJar mCookieJar;
     private HttpsFactory mHttpsFactory;
+    private Executor mWorkingThreadPool;//工作线程池
 
 
     public HttpOptions connectTimeOut(int connectTimeOut) {
@@ -72,6 +74,11 @@ public class HttpOptions {
 
     public HttpOptions httpsFactory(HttpsFactory factory) {
         this.mHttpsFactory = factory;
+        return this;
+    }
+
+    public HttpOptions WorkingThreadPool(Executor threadPool) {
+        this.mWorkingThreadPool = threadPool;
         return this;
     }
 
@@ -120,5 +127,9 @@ public class HttpOptions {
 
     public HttpsFactory getHttpsFactory() {
         return mHttpsFactory;
+    }
+
+    public Executor getWorkingThreadPool() {
+        return mWorkingThreadPool;
     }
 }
