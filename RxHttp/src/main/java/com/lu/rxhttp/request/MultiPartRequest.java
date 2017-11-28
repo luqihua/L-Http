@@ -21,16 +21,17 @@ import okhttp3.RequestBody;
 
 public class MultiPartRequest extends AbstractRequest<MultiPartRequest> {
 
-    private Map<String, String> mParams = new LinkedHashMap<>();
     private Map<String, File> mFileData = new LinkedHashMap<>();
     private ProgressCallBack mProgressCallback;
+    private MultipartBody multipartBody;
+
 
     public MultiPartRequest() {
         this.obj = this;
     }
 
-    public MultiPartRequest params(Map<String, String> params) {
-        this.mParams.putAll(params);
+    public MultiPartRequest multipartBody(MultipartBody multipartBody) {
+        this.multipartBody = multipartBody;
         return this;
     }
 
@@ -46,17 +47,22 @@ public class MultiPartRequest extends AbstractRequest<MultiPartRequest> {
 
     @Override
     protected Request createRequest() {
-        Request.Builder builder = new Request.Builder()
-                .url(mUrl);
+        Request.Builder builder = newRequestBuilder();
 
         /*添加请求参数*/
 
         MultipartBody.Builder multipartBuilder = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM);
 
+        if (this.multipartBody != null && multipartBody.size() > 0) {
+            for (MultipartBody.Part part : multipartBody.parts()) {
+                multipartBuilder.addPart(part);
+            }
+        }
+
         if (mParams.size() > 0) {
-            for (Map.Entry<String, String> entry : mParams.entrySet()) {
-                multipartBuilder.addFormDataPart(entry.getKey(), entry.getValue());
+            for (String key : mParams.keySet()) {
+                multipartBuilder.addFormDataPart(key, mParams.get(key));
             }
         }
 

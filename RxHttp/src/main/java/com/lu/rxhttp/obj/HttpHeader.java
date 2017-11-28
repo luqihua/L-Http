@@ -1,11 +1,6 @@
 package com.lu.rxhttp.obj;
 
-import android.support.annotation.NonNull;
-
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Author: luqihua
@@ -13,10 +8,7 @@ import java.util.Set;
  * Description: Header
  */
 
-public class HttpHeader implements Map<String, String> {
-
-    private Map<String, String> mValues = new HashMap<>();
-
+public class HttpHeader extends HashMap<String, String> {
     /*public header*/
     private final String CACHE_CONTROL = "Cache-Control";
     private final String PRAGMA = "Pragma";
@@ -132,68 +124,5 @@ public class HttpHeader implements Map<String, String> {
 
     public void getContentEncoding(String value) {
         put(CONTENT_ENCODING, value);
-    }
-
-    @Override
-    public int size() {
-        return mValues.size();
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return mValues.isEmpty();
-    }
-
-    @Override
-    public boolean containsKey(Object key) {
-        return mValues.containsKey(key);
-    }
-
-    @Override
-    public boolean containsValue(Object value) {
-        return mValues.containsValue(value);
-    }
-
-    @Override
-    public String get(Object key) {
-        return mValues.get(key);
-    }
-
-    @Override
-    public String put(String key, String value) {
-        return mValues.put(key, value);
-    }
-
-    @Override
-    public String remove(Object key) {
-        return mValues.remove(key);
-    }
-
-    @Override
-    public void putAll(@NonNull Map<? extends String, ? extends String> m) {
-        mValues.putAll(m);
-    }
-
-    @Override
-    public void clear() {
-        mValues.clear();
-    }
-
-    @NonNull
-    @Override
-    public Set<String> keySet() {
-        return mValues.keySet();
-    }
-
-    @NonNull
-    @Override
-    public Collection<String> values() {
-        return mValues.values();
-    }
-
-    @NonNull
-    @Override
-    public Set<Entry<String, String>> entrySet() {
-        return mValues.entrySet();
     }
 }

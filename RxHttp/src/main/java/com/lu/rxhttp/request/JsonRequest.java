@@ -26,16 +26,6 @@ public class JsonRequest extends AbstractRequest<JsonRequest> {
         this.mMethod = Const.POST;
     }
 
-    public JsonRequest addParam(String key, Object value) {
-        if (mJsonBodyMap == null) {
-            mJsonBodyMap = new HashMap<>();
-        }
-        mJsonBodyMap.put(key, value);
-
-        return this;
-    }
-
-
     public JsonRequest addJsonBody(String body) {
         this.mJsonBody = body;
         return this;
@@ -49,7 +39,7 @@ public class JsonRequest extends AbstractRequest<JsonRequest> {
 
     @Override
     protected Request createRequest() {
-        Request.Builder builder = new Request.Builder();
+        Request.Builder builder = newRequestBuilder();
         builder.url(mUrl);
         builder.addHeader("Content-Type", "application/json");
 

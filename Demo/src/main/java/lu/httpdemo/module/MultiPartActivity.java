@@ -10,11 +10,14 @@ import android.widget.Toast;
 
 import com.lu.rxhttp.Interface.ProgressCallBack;
 import com.lu.rxhttp.util.FileStorageUtil;
+import com.lu.rxhttp.util.HttpUtil;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -25,6 +28,9 @@ import lu.httpdemo.R;
 import lu.httpdemo.bean.HttpResult;
 import lu.httpdemo.util.BindView;
 import lu.httpdemo.util.InjectUtil;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 
 public class MultiPartActivity extends AppCompatActivity {
 
@@ -84,7 +90,7 @@ public class MultiPartActivity extends AppCompatActivity {
         }
     }
 
-    public void multiPartUpload(View view) {
+    public void simpleFileUpload(View view) {
 
         if (imageFile1 == null || !imageFile1.exists()) {
             Toast.makeText(this, "先保存文件到本地", Toast.LENGTH_SHORT).show();
@@ -93,23 +99,23 @@ public class MultiPartActivity extends AppCompatActivity {
 
         HttpClient.getApiService()
                 .upload("luqihua", "123456", imageFile1,
-                new ProgressCallBack() {
-                    @Override
-                    public void onProgressChange(int progress) {
-                        mProgressBar.setProgress(progress);
-                        Log.d("FileUploadActivity", "progress:" + progress + "===" + Thread.currentThread().getName());
-                    }
-                })
+                        new ProgressCallBack() {
+                            @Override
+                            public void onProgressChange(int progress) {
+                                mProgressBar.setProgress(progress);
+                                Log.d("FileUploadActivity", "progress:" + progress + "===" + Thread.currentThread().getName());
+                            }
+                        })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<HttpResult<String>>() {
+                .subscribe(new Observer<HttpResult<Map<String, String>>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
 
                     }
 
                     @Override
-                    public void onNext(HttpResult<String> stringHttpResult) {
+                    public void onNext(HttpResult<Map<String, String>> stringHttpResult) {
                         mResultView.setText(stringHttpResult.toString());
                     }
 
@@ -123,57 +129,63 @@ public class MultiPartActivity extends AppCompatActivity {
 
                     }
                 });
+    }
+
+    public void multiFileUpload(View view) {
+
+        if (imageFile1 == null || !imageFile1.exists()) {
+            Toast.makeText(this, "先保存文件到本地", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
 
-//        service.uploadPHP("carbase", "1", imageFile1
-//                , new ProgressCallBack() {
-//                    @Override
-//                    public void onProgressChange(int progress) {
-//                        Log.d("MultiPartActivity", "progress:" + progress);
-//                    }
-//                })
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(new Observer<HttpResult<Map<String, String>>>() {
-//                    @Override
-//                    public void onSubscribe(Disposable d) {
-//
-//                    }
-//
-//                    @Override
-//                    public void onNext(HttpResult<Map<String, String>> mapHttpResult) {
-//                        Log.d("MultiPartActivity", "mapHttpResult:" + mapHttpResult);
-//                    }
-//
-//                    @Override
-//                    public void onError(Throwable e) {
-//                        Toast.makeText(MultiPartActivity.this, "e:" + e, Toast.LENGTH_SHORT).show();
-//                    }
-//
-//                    @Override
-//                    public void onComplete() {
-//
-//                    }
-//                });
-//        new MultiPartRequest()
-//                .url("http://119.23.237.24:8080/demo/upload")
-//                .addParam("key", "value")
-//                .addFile("image", imageFile)
-//                .addFile("image1", imageFile1)
-//                .addFile("txt_file", txtFile)
-//                .progress(new ProgressCallBack() {
-//                    @Override
-//                    public void onProgressChange(int progress) {
-//                        mProgressBar.setProgress(progress);
-//                        Log.d("FileUploadActivity", "progress:" + progress + "===" + Thread.currentThread().getName());
-//                    }
-//                })
-//                .observerString()
-//                .subscribe(new Consumer<String>() {
-//                    @Override
-//                    public void accept(@NonNull String s) throws Exception {
-//                        mResultView.setText(s);
-//                    }
-//                });
+        Map<String, File> fileMap = new HashMap<>();
+        fileMap.put("imageFile1", imageFile1);
+        fileMap.put("imageFile2", imageFile2);
+        fileMap.put("txtfile", txtFile);
+
+
+        MultipartBody.Builder builder = new MultipartBody.Builder();
+        for (String key : fileMap.keySet()) {
+            File file = fileMap.get(key);
+            String name = file.getName();
+            RequestBody body = RequestBody.create(MediaType.parse(HttpUtil.getMimeTypeFromFile(file)), file);
+            MultipartBody.Part part = MultipartBody.Part.createFormData(key, name, body);
+            builder.addPart(part);
+        }
+
+
+        HttpClient.getApiService()
+                .multiUpload(builder.build(),
+                        new ProgressCallBack() {
+                            @Override
+                            public void onProgressChange(int progress) {
+                                mProgressBar.setProgress(progress);
+                                Log.d("FileUploadActivity", "progress:" + progress + "===" + Thread.currentThread().getName());
+                            }
+                        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<HttpResult<Map<String, String>>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(HttpResult<Map<String, String>> stringHttpResult) {
+                        mResultView.setText(stringHttpResult.toString());
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        mResultView.setText(e.toString());
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
     }
 }

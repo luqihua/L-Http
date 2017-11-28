@@ -7,12 +7,12 @@ import com.lu.rxhttp.Interface.IRequest;
 import com.lu.rxhttp.RxHttp;
 import com.lu.rxhttp.intercept.CacheIntercept;
 import com.lu.rxhttp.intercept.LogInterceptor;
-import com.lu.rxhttp.obj.CustomResponse;
 import com.lu.rxhttp.obj.HttpException;
 import com.lu.rxhttp.obj.HttpHeader;
 import com.lu.rxhttp.util.Const;
 
-import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
@@ -39,7 +39,9 @@ public abstract class AbstractRequest<T extends AbstractRequest> implements IReq
 
     String mMethod = Const.POST;//default post request
 
-    HttpHeader mHeaders;
+    HttpHeader mHeaders = new HttpHeader();
+
+    Map<String, String> mParams = new HashMap<>();
 
     String mTag;
 
@@ -75,11 +77,14 @@ public abstract class AbstractRequest<T extends AbstractRequest> implements IReq
     }
 
     @Override
-    public T header(String key, String value) {
-        if (mHeaders == null) {
-            mHeaders = new HttpHeader();
-        }
-        mHeaders.put(key, value);
+    public T params(Map<String, String> params) {
+        this.mParams.putAll(params);
+        return obj;
+    }
+
+    @Override
+    public T headers(HttpHeader headers) {
+        this.mHeaders.putAll(headers);
         return obj;
     }
 
@@ -101,26 +106,14 @@ public abstract class AbstractRequest<T extends AbstractRequest> implements IReq
         return obj;
     }
 
-    public T headers(HttpHeader header) {
-        this.mHeaders = header;
-        return obj;
-    }
-
-
     @Override
-    public Request getRequest() {
+    public Request.Builder newRequestBuilder() {
 
-        if (mUrl == null || mUrl.length() == 0 || !mUrl.startsWith("http")) {
-            throw new RuntimeException("incorrect http url");
-        }
-
-        Request.Builder builder = createRequest().newBuilder();
+        Request.Builder builder = new Request.Builder().url(mUrl);
 
          /*add headers*/
-        if (mHeaders != null) {
-            for (String key : mHeaders.keySet()) {
-                builder.addHeader(key, mHeaders.get(key));
-            }
+        for (String key : mHeaders.keySet()) {
+            builder.addHeader(key, mHeaders.get(key));
         }
         /*add tag  default tag is the url*/
         mTag = mTag == null ? mUrl : mTag;
@@ -130,7 +123,7 @@ public abstract class AbstractRequest<T extends AbstractRequest> implements IReq
         if (mCacheControl != null) {
             builder.cacheControl(mCacheControl);
         }
-        return builder.build();
+        return builder;
     }
 
     @Override
@@ -153,11 +146,27 @@ public abstract class AbstractRequest<T extends AbstractRequest> implements IReq
         return Observable.create(new ObservableOnSubscribe<Response>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<Response> emitter) throws Exception {
-                CustomResponse customResponse = execute();
-                if (customResponse.isSuccess) {
-                    emitter.onNext(customResponse.response);
-                } else {
-                    emitter.onError(customResponse.exception);
+                Request request = createRequest();
+                String tag = (String) request.tag();
+                try {
+                    Call call = getClient().newCall(request);
+
+                    if (tag != null) {
+                        RxHttp.addCall(tag, call);
+                    }
+                    //execute
+                    Response response = call.execute();
+
+                    if (response.isSuccessful()) {
+                        emitter.onNext(response);
+                    } else {
+                        emitter.onError(HttpException.newInstance(response.code()));
+                    }
+                } catch (Exception e) {
+                    emitter.onError(new HttpException(-1, e.toString()));
+                } finally {
+                    RxHttp.cancelCall(tag);
+                    emitter.onComplete();
                 }
             }
         });
@@ -172,44 +181,6 @@ public abstract class AbstractRequest<T extends AbstractRequest> implements IReq
                         return response.body().string();
                     }
                 });
-    }
-
-    @Override
-    public Observable<InputStream> observerStream() {
-        return observerResponse().map(new Function<Response, InputStream>() {
-            @Override
-            public InputStream apply(@NonNull Response response) throws Exception {
-                return response.body().byteStream();
-            }
-        });
-    }
-
-    @Override
-    public CustomResponse execute() {
-        CustomResponse customResponse = new CustomResponse();
-        Request request = getRequest();
-        String tag = (String) request.tag();
-        try {
-            Call call = getClient().newCall(request);
-
-            if (tag != null) {
-                RxHttp.addCall(tag, call);
-            }
-            //execute
-            Response response = call.execute();
-
-            if (response.isSuccessful()) {
-                customResponse.isSuccess = true;
-                customResponse.response = response;
-            } else {
-                customResponse.exception = HttpException.newInstance(response.code());
-            }
-        } catch (Exception e) {
-            customResponse.exception = new HttpException(-1, e.toString());
-        } finally {
-            RxHttp.cancelCall(tag);
-        }
-        return customResponse;
     }
 
     protected abstract Request createRequest();

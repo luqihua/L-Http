@@ -31,6 +31,31 @@ public class FormRequestActivity extends AppCompatActivity {
 
 
     public void get(View view) {
+        HttpClient.getApiService()
+                .getLogin("luqihua", "hello")
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<HttpResult<User>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(HttpResult<User> userHttpResult) {
+                        mResultView.setText(userHttpResult.toString());
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Toast.makeText(FormRequestActivity.this, "e:" + e, Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
     }
 
 

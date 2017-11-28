@@ -1,6 +1,9 @@
 package com.lu.rxhttp.Interface;
 
+import com.lu.rxhttp.obj.HttpHeader;
 import com.lu.rxhttp.util.Const;
+
+import java.util.Map;
 
 import okhttp3.CacheControl;
 import okhttp3.OkHttpClient;
@@ -16,11 +19,13 @@ public interface IRequest<T> {
 
     T url(String url);
 
-    T tag(String tag);
-
     T method(@Const.HttpMethod String method);
 
-    T header(String key, String value);
+    T tag(String tag);
+
+    T headers(HttpHeader header);
+
+    T params(Map<String,String> params);
 
     T log(boolean log);
 
@@ -28,7 +33,7 @@ public interface IRequest<T> {
 
     T forceCache(String forceCache);
 
-    Request getRequest();
+    Request.Builder newRequestBuilder();
 
     OkHttpClient getClient();
 

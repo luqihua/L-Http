@@ -11,10 +11,17 @@
         android:text="保存文件" />
 
     <Button
-        android:id="@+id/sample_text"
+        android:id="@+id/sample_file"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="multiPartUpload"
+        android:onClick="simpleFileUpload"
+        android:text="单文件一次上传" />
+
+    <Button
+        android:id="@+id/multi_file"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="multiFileUpload"
         android:text="多文件一次上传" />
 
 

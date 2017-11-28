@@ -30,24 +30,24 @@ public class FormRequest extends AbstractRequest<FormRequest> {
 
     @Override
     protected Request createRequest() {
-        Request.Builder builder = new Request.Builder().url(mUrl);
+        Request.Builder builder = newRequestBuilder();
         /*添加请求参数*/
-        if (mParams != null && mParams.size() > 0) {
+        if (mParams.size() > 0) {
             if (mMethod.equals(Const.GET)) {
-                HttpUrl.Builder urlBuilder = HttpUrl.parse(mUrl).newBuilder();
-
-                for (Map.Entry<String, String> entry : mParams.entrySet()) {
-                    urlBuilder.addQueryParameter(entry.getKey(), entry.getValue());
+                HttpUrl httpUrl = HttpUrl.parse(mUrl);
+                if (httpUrl == null) {
+                    throw new RuntimeException("incorrect url");
                 }
-
+                HttpUrl.Builder urlBuilder = httpUrl.newBuilder();
+                for (String key : mParams.keySet()) {
+                    urlBuilder.addQueryParameter(key, mParams.get(key));
+                }
                 builder.url(urlBuilder.build().toString());
-
             } else {
                 FormBody.Builder formBuilder = new FormBody.Builder();
-                for (Map.Entry<String, String> entry : mParams.entrySet()) {
-                    formBuilder.add(entry.getKey(), entry.getValue());
+                for (String key : mParams.keySet()) {
+                    formBuilder.add(key, mParams.get(key));
                 }
-
                 builder.post(formBuilder.build());
             }
         }

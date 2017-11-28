@@ -1,11 +1,15 @@
 package com.lu.rxhttp.work;
 
 import com.lu.rxhttp.annotation.Body;
+import com.lu.rxhttp.annotation.Header;
+import com.lu.rxhttp.annotation.HeaderMap;
 import com.lu.rxhttp.annotation.POST;
+import com.lu.rxhttp.obj.HttpHeader;
 import com.lu.rxhttp.request.JsonRequest;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.Map;
 
 import io.reactivex.functions.Function;
 import okhttp3.OkHttpClient;
@@ -38,32 +42,40 @@ public class JsonWork extends AWork {
             url = baseUrl + url;
         }
 
-
         //解析参数
         Annotation[][] annotationSS = checkoutParameter(method, args);
         int len = annotationSS.length;
-        if (len != 1) {
-            throw new RuntimeException("@Json method must has one parameter with annotation @Body");
-        }
 
-        Annotation[] annotations = annotationSS[0];
-        Object params = null;
-        for (Annotation annotation : annotations) {
-            if (annotation instanceof Body) {
-                params = args[0];
-                break;
+        Object requestBody = null;
+        HttpHeader headers = new HttpHeader();
+
+        for (int i = 0; i < len; i++) {
+            if (annotationSS[i].length != 1) {
+                //每个参数只能有一个注解，为了保证参数类型的正确性
+                throw new RuntimeException("evey parameter need one annotation");
             }
-        }
 
-        if (params == null) {
-            throw new RuntimeException("@Json method can't has null parameter");
+            Annotation annotation = annotationSS[i][0];
+
+            if (annotation instanceof Header) {
+                headers.put(((Header) annotation).value(), (String) args[i]);
+            } else if (annotation instanceof HeaderMap) {
+                headers.putAll((Map<? extends String, ? extends String>) args[i]);
+            } else if (annotation instanceof Body) {
+                if (requestBody == null) {
+                    requestBody = args[i];
+                } else {
+                    throw new RuntimeException("@JsonRequest can only declare one @Body");
+                }
+            }
         }
 
         return new JsonRequest()
                 .url(url)
                 .client(client)
                 .log(true)
-                .addJsonBody(params)
+                .headers(headers)
+                .addJsonBody(requestBody)
                 .observerString()
                 .map(new Function<String, Object>() {
                     @Override

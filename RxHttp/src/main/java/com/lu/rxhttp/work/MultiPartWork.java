@@ -2,7 +2,9 @@ package com.lu.rxhttp.work;
 
 import com.lu.rxhttp.Interface.ProgressCallBack;
 import com.lu.rxhttp.annotation.Field;
+import com.lu.rxhttp.annotation.FieldMap;
 import com.lu.rxhttp.annotation.FilePart;
+import com.lu.rxhttp.annotation.MultiBody;
 import com.lu.rxhttp.annotation.POST;
 import com.lu.rxhttp.annotation.ProgressListener;
 import com.lu.rxhttp.request.MultiPartRequest;
@@ -14,6 +16,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import io.reactivex.functions.Function;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 
 /**
@@ -44,6 +47,7 @@ public class MultiPartWork extends AWork {
 
         Map<String, String> params = new LinkedHashMap<>();
         Map<String, File> fileData = new LinkedHashMap<>();
+        MultipartBody body = null;
         ProgressCallBack callBack = null;
 
 
@@ -57,6 +61,14 @@ public class MultiPartWork extends AWork {
                     fileData.put(((FilePart) annotation).value(), (File) args[i]);
                 } else if (annotation instanceof ProgressListener) {
                     callBack = (ProgressCallBack) args[i];
+                } else if (annotation instanceof FieldMap) {
+                    fileData.putAll((Map<? extends String, ? extends File>) args[i]);
+                } else if (annotation instanceof MultiBody) {
+                    if (args[i] instanceof MultipartBody) {
+                        body = (MultipartBody) args[i];
+                    } else {
+                        throw new RuntimeException("@MultiPart just can be annotation at MultipartBody parameter");
+                    }
                 }
             }
         }
@@ -66,6 +78,7 @@ public class MultiPartWork extends AWork {
                 .url(url)
                 .client(client)
                 .params(params)
+                .multipartBody(body)
                 .files(fileData)
                 .progress(callBack)
                 .observerString()

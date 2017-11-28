@@ -1,5 +1,6 @@
 package com.lu.rxhttp.work;
 
+
 import com.google.gson.Gson;
 
 import java.lang.annotation.Annotation;
@@ -7,6 +8,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
+import io.reactivex.Observable;
 import okhttp3.OkHttpClient;
 
 /**
@@ -60,16 +62,21 @@ public abstract class AWork {
     /**
      * 解析返回结果，如果用户想要得到string  则不进行json转换
      *
-     * @param s
      * @param method
      * @return
      */
-    public Object parseResult(String s, Method method) {
-        Type type = parseReturnType(method);
-        if (type.equals(String.class)) {
-            return s;
+    public Object parseResult(String jsonStr, Method method) {
+        Type type = method.getGenericReturnType();
+        if (type instanceof ParameterizedType) {
+            ParameterizedType pType = (ParameterizedType) type;
+            if (pType.getRawType().equals(Observable.class)) {
+                Type[] types = pType.getActualTypeArguments();
+                return gson.fromJson(jsonStr, types[0]);
+            } else {
+                throw new RuntimeException("return type must an io.reactivex.Observable<Bean>");
+            }
         } else {
-            return gson.fromJson(s, type);
+            throw new RuntimeException("return type error");
         }
     }
 

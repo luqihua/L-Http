@@ -10,8 +10,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.Map;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -33,7 +31,6 @@ import okhttp3.ResponseBody;
 public class DownLoadRequest extends AbstractRequest<DownLoadRequest> {
 
     private File file;
-    protected Map<String, String> mParams;
     private ProgressCallBack mProgressCallback;
 
     public DownLoadRequest() {
@@ -41,16 +38,7 @@ public class DownLoadRequest extends AbstractRequest<DownLoadRequest> {
     }
 
     public DownLoadRequest addParam(String key, String value) {
-        if (mParams == null) {
-            mParams = new HashMap<>();
-        }
-        mParams.put(key, value);
-        return this;
-    }
-
-
-    public DownLoadRequest params(@NonNull Map<String, String> params) {
-        this.mParams = params;
+        this.mParams.put(key, value);
         return this;
     }
 
@@ -73,25 +61,26 @@ public class DownLoadRequest extends AbstractRequest<DownLoadRequest> {
 
     @Override
     protected Request createRequest() {
-
-        Request.Builder builder = new Request.Builder()
-                .url(mUrl);
+        Request.Builder builder = newRequestBuilder();
         /*添加请求参数*/
-        if (mParams != null && mParams.size() > 0) {
+        if (mParams.size() > 0) {
             //get请求
             if (mMethod.equals(Const.GET)) {
-                HttpUrl.Builder urlBuilder = HttpUrl.parse(mUrl)
-                        .newBuilder();
-                for (Map.Entry<String, String> entry : mParams.entrySet()) {
-                    urlBuilder.addQueryParameter(entry.getKey(), entry.getValue());
+                HttpUrl httpUrl = HttpUrl.parse(mUrl);
+                if (httpUrl == null) {
+                    throw new RuntimeException("incorrect url");
+                }
+                HttpUrl.Builder urlBuilder = httpUrl.newBuilder();
+                for (String key : mParams.keySet()) {
+                    urlBuilder.addQueryParameter(key, mParams.get(key));
                 }
 
                 builder.url(urlBuilder.build().toString());
 
             } else {//post请求
                 FormBody.Builder formBuilder = new FormBody.Builder();
-                for (Map.Entry<String, String> entry : mParams.entrySet()) {
-                    formBuilder.add(entry.getKey(), entry.getValue());
+                for (String key : mParams.keySet()) {
+                    formBuilder.add(key, mParams.get(key));
                 }
                 builder.post(formBuilder.build());
             }
@@ -122,7 +111,7 @@ public class DownLoadRequest extends AbstractRequest<DownLoadRequest> {
                             in = responseBody.byteStream();
                             out = new FileOutputStream(file);
 
-                            byte[] buffer = new byte[10 * 1024];
+                            byte[] buffer = new byte[1024];
                             int len;
                             while ((len = in.read(buffer)) != -1) {
                                 out.write(buffer, 0, len);
@@ -138,7 +127,8 @@ public class DownLoadRequest extends AbstractRequest<DownLoadRequest> {
                         }
                         return file.getAbsolutePath();
                     }
-                }).subscribeOn(Schedulers.io())
+                })
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 

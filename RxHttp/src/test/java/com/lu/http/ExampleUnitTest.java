@@ -2,18 +2,13 @@ package com.lu.http;
 
 import org.junit.Test;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.WildcardType;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
-import okhttp3.Call;
 
 import static org.junit.Assert.assertEquals;
 
@@ -54,43 +49,21 @@ public class ExampleUnitTest {
 
     @Test
     public void test2() throws Exception {
-        Hello hello = new Hello();
+        Class cls = Hello.class;
+        Method method = cls.getDeclaredMethod("getObj", String.class);
 
-        Class cls = hello.getClass();
-
-        Method method = cls.getDeclaredMethod("getObj");
-
-        Type type = method.getGenericReturnType();
-
-        if (type instanceof ParameterizedType) {
-            ParameterizedType parameterizedType = (ParameterizedType) type;
-            if (parameterizedType.getRawType().equals(Call.class)) {
-
+        Annotation[][] annotations = method.getParameterAnnotations();
+        int len = annotations.length;
+        System.out.println(len);
+        for (int i = 0; i < len; i++) {
+            for (Annotation annotation : annotations[i]) {
+                System.out.println(annotation.toString());
             }
-            Type[] types = ((ParameterizedType) type).getActualTypeArguments();
-            for (Type type1 : types) {
-                if (type1 instanceof WildcardType) {
-                    System.out.println(((WildcardType) type1).getUpperBounds()[0]);
-                } else {
-                    System.out.println(type1.toString());
-                }
-            }
-        } else {
-            System.out.println(type);
         }
-
-
-        List<String> list = new ArrayList<String>();
-
-        Type type1 = list.getClass().getGenericSuperclass();
-        if (type1 instanceof ParameterizedType) {
-            System.out.println(((ParameterizedType) type1).getRawType());
-        }
-
     }
 
     public static class Hello {
-        public Observable<?> getObj() throws Exception {
+        public Observable<?> getObj(@Param("key") @Header("header") String value) throws Exception {
             System.out.println("hello");
             return null;
         }
