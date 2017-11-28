@@ -4,18 +4,16 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.lu.obj.HttpObserver;
-import com.lu.obj.JsonTransformer;
-import com.lu.request.FormRequest;
-
-import java.util.Arrays;
-
+import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Consumer;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import lu.httpdemo.HttpClient;
 import lu.httpdemo.R;
+import lu.httpdemo.bean.HttpResult;
+import lu.httpdemo.bean.User;
 import lu.httpdemo.util.BindView;
 import lu.httpdemo.util.InjectUtil;
 
@@ -33,46 +31,32 @@ public class FormRequestActivity extends AppCompatActivity {
 
 
     public void get(View view) {
-        new FormRequest()
-//                .url("http://119.23.237.24:8080/demo/login")
-                .url("http://192.168.70.56:8080/Test/login")
-                .log(false)
-                .addParam("username", "luqihua")
-                .addParam("password", "helloworld")
-//                .observerResult()
-//                .subscribe(new HttpObserver() {
-//                    @Override
-//                    protected void onSuccess(String data, String msg) {
-//                        mResultView.setText("onSuccess:\n" + "data: " + data + "\nmsg: " + msg);
-//                    }
-//                    @Override
-//                    public void onAfter() {
-//                        Log.d("FormRequestActivity", "onAfter");
-//                    }
-//                });
-                .observerString()
-                .compose(new JsonTransformer(new String[]{"code", "data", "msg"}))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<String[]>() {
-                    @Override
-                    public void accept(@NonNull String[] strings) throws Exception {
-                        mResultView.setText(Arrays.toString(strings));
-                    }
-                });
     }
 
 
     public void post(View view) {
-        new FormRequest()
-                .post("http://119.23.237.24:8080/demo/login")
-                .log(true)
-                .addParam("username", "luqihua")
-                .addParam("password", "helloworld")
-                .observerData()
-                .subscribe(new HttpObserver() {
+        HttpClient.getApiService()
+                .login("luqihua", "hello")
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<HttpResult<User>>() {
                     @Override
-                    protected void onSuccess(String data, String msg) {
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(HttpResult<User> userHttpResult) {
+                        mResultView.setText(userHttpResult.toString());
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Toast.makeText(FormRequestActivity.this, "e:" + e, Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onComplete() {
 
                     }
                 });

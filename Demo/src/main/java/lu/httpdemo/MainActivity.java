@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Log.d("MainActivity", "Runtime.getRuntime().availableProcessors():" + Runtime.getRuntime().availableProcessors());
         InjectUtil.bind(this);
+
     }
 
     public void formRequest(View view) {

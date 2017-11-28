@@ -6,9 +6,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 
-import com.lu.Interface.ProgressCallBack;
-import com.lu.request.DownLoadRequest;
-import com.lu.util.FileStorageUtil;
+import com.lu.rxhttp.Interface.ProgressCallBack;
+import com.lu.rxhttp.request.DownLoadRequest;
+import com.lu.rxhttp.util.FileStorageUtil;
 
 import java.io.File;
 

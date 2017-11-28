@@ -8,7 +8,7 @@ package lu.httpdemo.bean;
 
 public class HttpResult<T> {
     private int code;
-    private String msg;
+    private String message;
     private T data;
 
     public int getCode() {
@@ -19,12 +19,12 @@ public class HttpResult<T> {
         this.code = code;
     }
 
-    public String getMsg() {
-        return msg;
+    public String getMessage() {
+        return message;
     }
 
-    public void setMsg(String msg) {
-        this.msg = msg;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public T getData() {
@@ -35,11 +35,12 @@ public class HttpResult<T> {
         this.data = data;
     }
 
-
     @Override
     public String toString() {
-        return "code=" + code
-                + "\nmsg=" + msg
-                + "\ndata=" + data;
+        return "HttpResult{" +
+                "code=" + code +
+                ", message='" + message + '\'' +
+                ", data=" + data +
+                '}';
     }
 }

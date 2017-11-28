@@ -2,14 +2,12 @@ package lu.httpdemo.app;
 
 import android.app.Application;
 
-import com.lu.HttpOptions;
-import com.lu.RxHttp;
-import com.lu.obj.CookieJarImp;
-import com.lu.obj.HttpHeader;
-import com.lu.obj.HttpTransformer;
-import com.lu.obj.OkCache;
-import com.lu.util.FileStorageUtil;
-import com.lu.util.HttpsFactory;
+import com.lu.rxhttp.HttpOptions;
+import com.lu.rxhttp.RxHttp;
+import com.lu.rxhttp.obj.CookieJarImp;
+import com.lu.rxhttp.obj.OkCache;
+import com.lu.rxhttp.util.FileStorageUtil;
+import com.lu.rxhttp.util.HttpsFactory;
 
 import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -41,12 +39,8 @@ public class BaseApp extends Application {
                     //拦截器
                     .networkInterceptors(new ArrayList<Interceptor>())
                     .interceptors(new ArrayList<Interceptor>())
-                    //所有请求的公共头
-                    .publicHeaders(new HttpHeader())
                     //添加缓存
                     .cache(new OkCache(this))
-                    //解析http返回
-                    .httpTransformer(new HttpTransformer("code", "msg", "data", 1))
                     //管理cookie持久化
                     .cookieJar(new CookieJarImp(this))
                     //自定义工作线程池
