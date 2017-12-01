@@ -7,11 +7,12 @@ import java.lang.annotation.Target;
 
 /**
  * Author: luqihua
- * Time: 2017/11/28
- * Description: Header
+ * Time: 2017/11/30
+ * Description: POST
  */
-@Target(ElementType.PARAMETER)
+
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Header {
+@Target(ElementType.METHOD)//作用在方法上
+public @interface POST {
     String value() default "";
 }

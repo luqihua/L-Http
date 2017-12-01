@@ -6,12 +6,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Author: luqihua
- * Time: 2017/11/15
- * Description: Path
+ * Created by 82172 on 2017/11/30.
  */
-@Target(ElementType.PARAMETER)
+//作用时时运行时
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Param {
+//作用目标是方法参数
+@Target(ElementType.PARAMETER)
+public @interface Field {
     String value() default "";
 }

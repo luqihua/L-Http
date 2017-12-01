@@ -37,7 +37,8 @@ public class HttpDispatcher {
             return new MultiPartWork(baseUrl, client).invoke(method, args);
         } else if (method.isAnnotationPresent(Json.class)) {
             return new JsonWork(baseUrl, client).invoke(method, args);
+        } else {
+            throw new RuntimeException("you need to add annotation @Form || @MultiPart || @Json to declare the quest Type");
         }
-        return null;
     }
 }

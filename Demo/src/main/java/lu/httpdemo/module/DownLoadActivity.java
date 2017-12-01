@@ -12,13 +12,13 @@ import com.lu.rxhttp.util.FileStorageUtil;
 
 import java.io.File;
 
-import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Consumer;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 import lu.httpdemo.R;
 import lu.httpdemo.util.BindView;
 import lu.httpdemo.util.InjectUtil;
 
-public class FileDownLoadActivity extends AppCompatActivity {
+public class DownLoadActivity extends AppCompatActivity {
 
     @BindView(R.id.progressbar)
     ProgressBar mProgressBar;
@@ -35,22 +35,37 @@ public class FileDownLoadActivity extends AppCompatActivity {
         final File file = FileStorageUtil.getInstance().getFileByName("dingding.exe");
 
         new DownLoadRequest()
-                //钉钉的安装程序下载地址
-                .url("http://sw.bos.baidu.com/sw-search-sp/software/2d47084bcbd4d/dd_3.4.8.exe")
+                //钉钉的安装程序下载地址   文件比较大可能会断
+                .get("http://sw.bos.baidu.com/sw-search-sp/software/2d47084bcbd4d/dd_3.4.8.exe")
                 //可选择是否订阅进度
                 .progress(new ProgressCallBack() {
                     @Override
                     public void onProgressChange(int progress) {
                         mProgressBar.setProgress(progress);
-                        Log.d("FileDownLoadActivity", "progress:" + progress);
+                        Log.d("DownLoadActivity", "progress:" + progress);
                     }
                 })
                 .targetFile(file)
                 .observerString()
-                .subscribe(new Consumer<String>() {
+                .subscribe(new Observer<String>() {
                     @Override
-                    public void accept(@NonNull String s) throws Exception {
-                        Log.d("FileDownLoadActivity", s);
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(String s) {
+                        Log.d("DownLoadActivity", s);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d("DownLoadActivity", "e:" + e);
+                    }
+
+                    @Override
+                    public void onComplete() {
+
                     }
                 });
 

@@ -10,7 +10,6 @@ import java.util.Map;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
-import okhttp3.Request;
 import okhttp3.RequestBody;
 
 /**
@@ -24,7 +23,6 @@ public class MultiPartRequest extends AbstractRequest<MultiPartRequest> {
     private Map<String, File> mFileData = new LinkedHashMap<>();
     private ProgressCallBack mProgressCallback;
     private MultipartBody multipartBody;
-
 
     public MultiPartRequest() {
         this.obj = this;
@@ -46,13 +44,12 @@ public class MultiPartRequest extends AbstractRequest<MultiPartRequest> {
     }
 
     @Override
-    protected Request createRequest() {
-        Request.Builder builder = newRequestBuilder();
-
+    protected RequestBody createRequestBody() {
         /*添加请求参数*/
 
         MultipartBody.Builder multipartBuilder = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM);
+
 
         if (this.multipartBody != null && multipartBody.size() > 0) {
             for (MultipartBody.Part part : multipartBody.parts()) {
@@ -84,8 +81,6 @@ public class MultiPartRequest extends AbstractRequest<MultiPartRequest> {
             body = new UploadBody(body, mProgressCallback);
         }
 
-        builder.post(body);
-
-        return builder.build();
+        return body;
     }
 }

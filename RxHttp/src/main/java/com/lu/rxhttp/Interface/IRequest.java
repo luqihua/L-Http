@@ -25,7 +25,7 @@ public interface IRequest<T> {
 
     T headers(HttpHeader header);
 
-    T params(Map<String,String> params);
+    T params(Map<String, String> params);
 
     T log(boolean log);
 
@@ -33,7 +33,7 @@ public interface IRequest<T> {
 
     T forceCache(String forceCache);
 
-    Request.Builder newRequestBuilder();
+    Request newRequest();
 
     OkHttpClient getClient();
 

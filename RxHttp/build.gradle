@@ -7,7 +7,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 25
         versionCode 1
-        versionName "1.0"
+        versionName "1"
     }
     buildTypes {
         debug {}
@@ -51,7 +51,7 @@ def libName = "rxhttp"
 //compile引用时的第1部分
 group = "com.lu.lib"
 // 版本号，//compile引用时的最后部分项目名，下次更新是只需要更改版本号即可
-version = "1.1.0"
+version = "2.0.0"
 //上面配置后上传至JCenter后的编译路径是这样的： compile 'com.lu.lib:rxhttp:1.0.0'
 
 //生成源文件

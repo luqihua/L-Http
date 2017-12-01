@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import okhttp3.MediaType;
-import okhttp3.Request;
 import okhttp3.RequestBody;
 
 /**
@@ -38,19 +37,11 @@ public class JsonRequest extends AbstractRequest<JsonRequest> {
     }
 
     @Override
-    protected Request createRequest() {
-        Request.Builder builder = newRequestBuilder();
-        builder.url(mUrl);
-        builder.addHeader("Content-Type", "application/json");
-
+    protected RequestBody createRequestBody() {
         if (mJsonBody == null) {
-            mJsonBody =  new Gson().toJson(mJsonBodyMap);
+            mJsonBody = new Gson().toJson(mJsonBodyMap);
         }
-
         RequestBody body = RequestBody.create(MediaType.parse("application/json"), mJsonBody);
-
-        builder.post(body);
-
-        return builder.build();
+        return body;
     }
 }

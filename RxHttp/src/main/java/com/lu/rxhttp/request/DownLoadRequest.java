@@ -17,9 +17,7 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.FormBody;
-import okhttp3.HttpUrl;
-import okhttp3.Request;
-import okhttp3.Response;
+import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 
 /**
@@ -35,6 +33,12 @@ public class DownLoadRequest extends AbstractRequest<DownLoadRequest> {
 
     public DownLoadRequest() {
         this.obj = this;
+    }
+
+    public DownLoadRequest get(String url) {
+        this.mUrl = url;
+        this.mMethod = Const.GET;
+        return this;
     }
 
     public DownLoadRequest addParam(String key, String value) {
@@ -60,33 +64,15 @@ public class DownLoadRequest extends AbstractRequest<DownLoadRequest> {
     }
 
     @Override
-    protected Request createRequest() {
-        Request.Builder builder = newRequestBuilder();
+    protected RequestBody createRequestBody() {
         /*添加请求参数*/
+        FormBody.Builder formBuilder = new FormBody.Builder();
         if (mParams.size() > 0) {
-            //get请求
-            if (mMethod.equals(Const.GET)) {
-                HttpUrl httpUrl = HttpUrl.parse(mUrl);
-                if (httpUrl == null) {
-                    throw new RuntimeException("incorrect url");
-                }
-                HttpUrl.Builder urlBuilder = httpUrl.newBuilder();
-                for (String key : mParams.keySet()) {
-                    urlBuilder.addQueryParameter(key, mParams.get(key));
-                }
-
-                builder.url(urlBuilder.build().toString());
-
-            } else {//post请求
-                FormBody.Builder formBuilder = new FormBody.Builder();
-                for (String key : mParams.keySet()) {
-                    formBuilder.add(key, mParams.get(key));
-                }
-                builder.post(formBuilder.build());
+            for (String key : mParams.keySet()) {
+                formBuilder.add(key, mParams.get(key));
             }
         }
-
-        return builder.build();
+        return formBuilder.build();
     }
 
 
@@ -94,15 +80,13 @@ public class DownLoadRequest extends AbstractRequest<DownLoadRequest> {
      * @return target File path
      */
     public Observable<String> observerString() {
-        return observerResponse()
-                .map(new Function<Response, String>() {
+        return observerResponseBody()
+                .map(new Function<ResponseBody, String>() {
                     @Override
-                    public String apply(@NonNull Response response) throws Exception {
+                    public String apply(@NonNull ResponseBody responseBody) throws Exception {
                         InputStream in = null;
                         OutputStream out = null;
                         try {
-                            ResponseBody responseBody = response.body();
-
                             //packing ResponseBody
                             if (mProgressCallback != null) {
                                 responseBody = new DownloadBody(responseBody, mProgressCallback);

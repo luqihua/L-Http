@@ -21,9 +21,12 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Function;
 import okhttp3.CacheControl;
 import okhttp3.Call;
+import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 /**
  * Author: luqihua
@@ -106,11 +109,15 @@ public abstract class AbstractRequest<T extends AbstractRequest> implements IReq
         return obj;
     }
 
+
+    public String getUrl() {
+        return mUrl;
+    }
+
     @Override
-    public Request.Builder newRequestBuilder() {
+    public Request newRequest() {
 
         Request.Builder builder = new Request.Builder().url(mUrl);
-
          /*add headers*/
         for (String key : mHeaders.keySet()) {
             builder.addHeader(key, mHeaders.get(key));
@@ -123,12 +130,34 @@ public abstract class AbstractRequest<T extends AbstractRequest> implements IReq
         if (mCacheControl != null) {
             builder.cacheControl(mCacheControl);
         }
-        return builder;
+
+        //get请求
+        if (mMethod.equals(Const.GET)) {
+            HttpUrl httpUrl = HttpUrl.parse(mUrl);
+            if (httpUrl == null) {
+                throw new RuntimeException("incorrect url");
+            }
+            HttpUrl.Builder urlBuilder = httpUrl.newBuilder();
+            for (String key : mParams.keySet()) {
+                urlBuilder.addQueryParameter(key, mParams.get(key));
+            }
+            builder.url(urlBuilder.build().toString());
+            return builder.build();
+        }
+
+        //post请求
+        builder.post(createRequestBody());
+        return builder.build();
     }
 
     @Override
     public OkHttpClient getClient() {
-        OkHttpClient.Builder builder = mClient.newBuilder();
+        OkHttpClient.Builder builder;
+        if (mClient != null) {
+            builder = mClient.newBuilder();
+        } else {
+            builder = new OkHttpClient.Builder();
+        }
         if (isLog) {
             builder.addInterceptor(new LogInterceptor());
         }
@@ -141,12 +170,12 @@ public abstract class AbstractRequest<T extends AbstractRequest> implements IReq
     }
 
     @Override
-    public Observable<Response> observerResponse() {
+    public Observable<ResponseBody> observerResponseBody() {
 
-        return Observable.create(new ObservableOnSubscribe<Response>() {
+        return Observable.create(new ObservableOnSubscribe<ResponseBody>() {
             @Override
-            public void subscribe(@NonNull ObservableEmitter<Response> emitter) throws Exception {
-                Request request = createRequest();
+            public void subscribe(@NonNull ObservableEmitter<ResponseBody> emitter) throws Exception {
+                Request request = newRequest();
                 String tag = (String) request.tag();
                 try {
                     Call call = getClient().newCall(request);
@@ -158,7 +187,7 @@ public abstract class AbstractRequest<T extends AbstractRequest> implements IReq
                     Response response = call.execute();
 
                     if (response.isSuccessful()) {
-                        emitter.onNext(response);
+                        emitter.onNext(response.body());
                     } else {
                         emitter.onError(HttpException.newInstance(response.code()));
                     }
@@ -174,15 +203,15 @@ public abstract class AbstractRequest<T extends AbstractRequest> implements IReq
 
     @Override
     public Observable<String> observerString() {
-        return observerResponse()
-                .map(new Function<Response, String>() {
+        return observerResponseBody()
+                .map(new Function<ResponseBody, String>() {
                     @Override
-                    public String apply(@NonNull Response response) throws Exception {
-                        return response.body().string();
+                    public String apply(@NonNull ResponseBody body) throws Exception {
+                        return body.string();
                     }
                 });
     }
 
-    protected abstract Request createRequest();
+    protected abstract RequestBody createRequestBody();
 
 }

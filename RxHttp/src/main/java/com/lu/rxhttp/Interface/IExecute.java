@@ -1,7 +1,7 @@
 package com.lu.rxhttp.Interface;
 
 import io.reactivex.Observable;
-import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 /**
  * Author: luqihua
@@ -11,7 +11,7 @@ import okhttp3.Response;
 
 public interface IExecute {
 
-    Observable<Response> observerResponse();
+    Observable<ResponseBody> observerResponseBody();
 
     Observable<String> observerString();
 }
