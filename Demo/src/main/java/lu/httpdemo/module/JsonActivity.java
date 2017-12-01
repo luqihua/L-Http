@@ -4,12 +4,15 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.lu.request.JsonRequest;
-
-import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Consumer;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+import lu.httpdemo.HttpClient;
 import lu.httpdemo.R;
+import lu.httpdemo.bean.HttpResult;
 import lu.httpdemo.bean.User;
 import lu.httpdemo.util.BindView;
 import lu.httpdemo.util.InjectUtil;
@@ -29,18 +32,33 @@ public class JsonActivity extends AppCompatActivity {
 
     public void jsonRequest(View view) {
         User user = new User();
-        user.setName("wengzhiqi");
+        user.setUsername("wengzhiqi");
         user.setAge(28);
         user.setPassword("helloworld");
 
-        new JsonRequest()
-                .url("http://119.23.237.24:8080/demo/json")
-                .addJsonBody(user)
-                .observerString()
-                .subscribe(new Consumer<String>() {
+        HttpClient.getApiService()
+                .loginJson(user)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<HttpResult<User>>() {
                     @Override
-                    public void accept(@NonNull String s) throws Exception {
-                        mResultView.setText(s);
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(HttpResult<User> userHttpResult) {
+                        mResultView.setText(userHttpResult.toString());
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Toast.makeText(JsonActivity.this, "e:" + e, Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onComplete() {
+
                     }
                 });
     }

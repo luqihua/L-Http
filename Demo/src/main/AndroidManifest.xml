@@ -21,8 +21,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".module.FormRequestActivity" />
-        <activity android:name=".module.FileDownLoadActivity" />
-        <activity android:name=".module.FileUploadActivity" />
+        <activity android:name=".module.DownLoadActivity" />
         <activity android:name=".module.HttpsActivity" />
         <activity android:name=".module.MultiPartActivity" />
         <activity android:name=".module.JsonActivity"></activity>

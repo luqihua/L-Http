@@ -13,12 +13,6 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="uploadFile"
-        android:text="文件上传" />
-
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:onClick="multiPartUpload"
         android:text="multiPart上传" />
 
@@ -28,11 +22,11 @@
         android:onClick="downloadFile"
         android:text="文件下载" />
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="httpsRequest"
-        android:text="https访问测试" />
+    <!--<Button-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:onClick="httpsRequest"-->
+        <!--android:text="https访问测试" />-->
 
     <Button
         android:layout_width="match_parent"
