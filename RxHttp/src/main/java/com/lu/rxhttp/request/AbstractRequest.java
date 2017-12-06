@@ -58,7 +58,7 @@ public abstract class AbstractRequest<T extends AbstractRequest> implements IReq
     }
 
     @Override
-    public T method(@Const.HttpMethod String method) {
+    public T method(String method) {
         this.mMethod = method;
         return obj;
     }
@@ -121,7 +121,7 @@ public abstract class AbstractRequest<T extends AbstractRequest> implements IReq
         }
 
         //get请求
-        if (mMethod.equals(Const.GET)) {
+        if (mMethod.equalsIgnoreCase(Const.GET)) {
             HttpUrl httpUrl = HttpUrl.parse(mUrl);
             if (httpUrl == null) {
                 throw new RuntimeException("incorrect url");

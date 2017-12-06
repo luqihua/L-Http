@@ -2,7 +2,6 @@ package com.lu.rxhttp.obj;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -31,7 +30,7 @@ public class PersistentCookieStore {
     private final SharedPreferences mObjectPrefs;//cookieName-cookie的文件
 
 
-    public PersistentCookieStore(@NonNull Context context) {
+    public PersistentCookieStore(Context context) {
         if (context == null) {
             throw new RuntimeException("the context must not be null for PersistentCookieStore");
         }

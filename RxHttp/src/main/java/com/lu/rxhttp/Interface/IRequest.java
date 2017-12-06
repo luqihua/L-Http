@@ -1,7 +1,6 @@
 package com.lu.rxhttp.Interface;
 
 import com.lu.rxhttp.obj.HttpHeaderMap;
-import com.lu.rxhttp.util.Const;
 
 import java.util.Map;
 
@@ -17,7 +16,7 @@ public interface IRequest<T> {
 
     T url(String url);
 
-    T method(@Const.HttpMethod String method);
+    T method(String method);
 
     T tag(String tag);
 

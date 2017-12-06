@@ -1,7 +1,5 @@
 package com.lu.rxhttp;
 
-import android.support.annotation.Nullable;
-
 import com.lu.rxhttp.Interface.IResponseBodyConvert;
 import com.lu.rxhttp.annotation.Form;
 import com.lu.rxhttp.annotation.Json;
@@ -41,7 +39,7 @@ public class HttpProxy {
         return (T) Proxy.newProxyInstance(service.getClassLoader()
                 , new Class[]{service}
                 , new InvocationHandler() {
-                    public Object invoke(Object proxy, final Method method, @Nullable Object[] args) throws Throwable {
+                    public Object invoke(Object proxy, final Method method, Object[] args) throws Throwable {
                         if (method.getDeclaringClass() == Object.class) {
                             return method.invoke(this, args);
                         }
@@ -51,14 +49,14 @@ public class HttpProxy {
     }
 
 
-    private Object dispatcher(final Method method, @Nullable Object[] args) {
+    private Object dispatcher(final Method method, Object[] args) {
         //请求类型
         if (method.isAnnotationPresent(Form.class)) {
-            return new FormWork(baseUrl, client,responseBodyConvert).invoke(method, args);
+            return new FormWork(baseUrl, client, responseBodyConvert).invoke(method, args);
         } else if (method.isAnnotationPresent(MultiPart.class)) {
-            return new MultiPartWork(baseUrl, client,responseBodyConvert).invoke(method, args);
+            return new MultiPartWork(baseUrl, client, responseBodyConvert).invoke(method, args);
         } else if (method.isAnnotationPresent(Json.class)) {
-            return new JsonWork(baseUrl, client,responseBodyConvert).invoke(method, args);
+            return new JsonWork(baseUrl, client, responseBodyConvert).invoke(method, args);
         } else {
             throw new RuntimeException("you need to add annotation ( @Form || @MultiPart || @Json ) to declare the quest Type");
         }
