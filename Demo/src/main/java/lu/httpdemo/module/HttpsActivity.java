@@ -11,8 +11,10 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import lu.httpdemo.R;
+import okhttp3.ResponseBody;
 
 public class HttpsActivity extends AppCompatActivity {
 
@@ -26,7 +28,13 @@ public class HttpsActivity extends AppCompatActivity {
         new FormRequest()
                 .url("https://kyfw.12306.cn/otn/")
                 .log(true)
-                .observerString()
+                .observerResponseBody()
+                .map(new Function<ResponseBody, String>() {
+                    @Override
+                    public String apply(ResponseBody responseBody) throws Exception {
+                        return responseBody.string();
+                    }
+                })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<String>() {

@@ -5,9 +5,11 @@ import com.lu.rxhttp.Interface.IResponseBodyConvert;
 import com.lu.rxhttp.annotation.Field;
 import com.lu.rxhttp.annotation.FieldMap;
 import com.lu.rxhttp.annotation.FilePart;
+import com.lu.rxhttp.annotation.FilePartMap;
 import com.lu.rxhttp.annotation.MultiBody;
 import com.lu.rxhttp.annotation.POST;
 import com.lu.rxhttp.annotation.ProgressListener;
+import com.lu.rxhttp.obj.HttpHeaderMap;
 import com.lu.rxhttp.request.MultiPartRequest;
 
 import java.io.File;
@@ -36,7 +38,7 @@ public class MultiPartWork extends AWork {
     }
 
     @Override
-    Object invoke(final Method method, Object[] args) {
+    public Object invoke(final Method method, Object[] args) {
         if (!method.isAnnotationPresent(POST.class)) {
             throw new RuntimeException("method need add  @POST(\"url\") ");
         }
@@ -55,17 +57,18 @@ public class MultiPartWork extends AWork {
         MultipartBody body = null;
         IProgressCallBack callBack = null;
 
-
         for (int i = 0; i < len; i++) {
             Annotation annotation = annotations[i];
             if (annotation instanceof Field) {
                 params.put(((Field) annotation).value(), (String) args[i]);
+            } else if (annotation instanceof FieldMap) {
+                params.putAll((Map<? extends String, ? extends String>) args[i]);
             } else if (annotation instanceof FilePart) {
                 fileData.put(((FilePart) annotation).value(), (File) args[i]);
+            } else if (annotation instanceof FilePartMap) {
+                fileData.putAll((Map<? extends String, ? extends File>) args[i]);
             } else if (annotation instanceof ProgressListener) {
                 callBack = (IProgressCallBack) args[i];
-            } else if (annotation instanceof FieldMap) {
-                fileData.putAll((Map<? extends String, ? extends File>) args[i]);
             } else if (annotation instanceof MultiBody) {
                 if (args[i] instanceof MultipartBody) {
                     body = (MultipartBody) args[i];
@@ -75,11 +78,13 @@ public class MultiPartWork extends AWork {
             }
         }
 
+        final HttpHeaderMap headerMap = getHttpHeaderMap(annotations, args);
         final Type returnType = getReturnType(method);
 
         return new MultiPartRequest()
                 .url(url)
                 .client(client)
+                .headers(headerMap)
                 .params(params)
                 .multipartBody(body)
                 .files(fileData)
@@ -89,7 +94,7 @@ public class MultiPartWork extends AWork {
                     @Override
                     public Object apply(ResponseBody responseBody) throws Exception {
                         if (responseBodyConvert != null) {
-                            return responseBodyConvert.convert(responseBody);
+                            return responseBodyConvert.convert(responseBody, returnType);
                         } else {
                             return gson.fromJson(responseBody.string(), returnType);
                         }

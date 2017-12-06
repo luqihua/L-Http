@@ -4,10 +4,8 @@ import com.lu.rxhttp.Interface.IResponseBodyConvert;
 import com.lu.rxhttp.annotation.Field;
 import com.lu.rxhttp.annotation.FieldMap;
 import com.lu.rxhttp.annotation.GET;
-import com.lu.rxhttp.annotation.Header;
-import com.lu.rxhttp.annotation.HeaderMap;
 import com.lu.rxhttp.annotation.POST;
-import com.lu.rxhttp.obj.HttpHeader;
+import com.lu.rxhttp.obj.HttpHeaderMap;
 import com.lu.rxhttp.request.FormRequest;
 import com.lu.rxhttp.util.Const;
 
@@ -17,7 +15,6 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.reactivex.ObservableSource;
 import io.reactivex.functions.Function;
 import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
@@ -30,13 +27,12 @@ import okhttp3.ResponseBody;
 
 public class FormWork extends AWork {
 
-
     public FormWork(String baseUrl, OkHttpClient client, IResponseBodyConvert convert) {
         super(baseUrl, client, convert);
     }
 
     @Override
-    Object invoke(final Method method, Object[] args) {
+    public Object invoke(final Method method, Object[] args) {
         //请求地址
         String url = null;
         //请求方式
@@ -65,20 +61,14 @@ public class FormWork extends AWork {
         //参数map
         Map<String, String> params = new HashMap<>();
         //请求头map
-        HttpHeader headers = new HttpHeader();
+        HttpHeaderMap headers = getHttpHeaderMap(annotations, args);
 
         for (int i = 0; i < len; i++) {
-
             Annotation annotation = annotations[0];
-
             if (annotation instanceof Field) {
                 params.put(((Field) annotation).value(), (String) args[i]);
             } else if (annotation instanceof FieldMap) {
                 params.putAll((Map<? extends String, ? extends String>) args[i]);
-            } else if (annotation instanceof Header) {
-                headers.put(((Header) annotation).value(), (String) args[i]);
-            } else if (annotation instanceof HeaderMap) {
-                headers.putAll((Map<? extends String, ? extends String>) args[i]);
             }
         }
 
@@ -93,11 +83,11 @@ public class FormWork extends AWork {
                 .client(client)
                 .params(params)
                 .observerResponseBody()
-                .flatMap(new Function<ResponseBody, ObservableSource<?>>() {
+                .map(new Function<ResponseBody, Object>() {
                     @Override
-                    public ObservableSource<?> apply(ResponseBody responseBody) throws Exception {
+                    public Object apply(ResponseBody responseBody) throws Exception {
                         if (responseBodyConvert != null) {
-                            return responseBodyConvert.convert(responseBody);
+                            return responseBodyConvert.convert(responseBody, returnType);
                         } else {
                             return gson.fromJson(responseBody.string(), returnType);
                         }

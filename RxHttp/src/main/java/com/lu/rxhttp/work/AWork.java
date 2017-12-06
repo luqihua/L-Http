@@ -3,11 +3,15 @@ package com.lu.rxhttp.work;
 
 import com.google.gson.Gson;
 import com.lu.rxhttp.Interface.IResponseBodyConvert;
+import com.lu.rxhttp.annotation.Header;
+import com.lu.rxhttp.annotation.HeaderMap;
+import com.lu.rxhttp.obj.HttpHeaderMap;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Map;
 
 import io.reactivex.Observable;
 import okhttp3.OkHttpClient;
@@ -54,6 +58,28 @@ public abstract class AWork {
         return annotations;
     }
 
+    /**
+     * 提取请求头信息
+     *
+     * @param annotations
+     * @param args
+     * @return
+     */
+    public HttpHeaderMap getHttpHeaderMap(Annotation[] annotations, Object[] args) {
+        HttpHeaderMap headerMap = new HttpHeaderMap();
+        int len = annotations.length;
+        for (int i = 0; i < len; i++) {
+
+            Annotation annotation = annotations[0];
+
+            if (annotation instanceof Header) {
+                headerMap.put(((Header) annotation).value(), (String) args[i]);
+            } else if (annotation instanceof HeaderMap) {
+                headerMap.putAll((Map<? extends String, ? extends String>) args[i]);
+            }
+        }
+        return headerMap;
+    }
 
     /**
      * 解析返回值类型

@@ -1,6 +1,6 @@
 package com.lu.rxhttp.Interface;
 
-import com.lu.rxhttp.obj.HttpHeader;
+import com.lu.rxhttp.obj.HttpHeaderMap;
 import com.lu.rxhttp.util.Const;
 
 import java.util.Map;
@@ -21,7 +21,7 @@ public interface IRequest<T> {
 
     T tag(String tag);
 
-    T headers(HttpHeader header);
+    T headers(HttpHeaderMap header);
 
     T params(Map<String, String> params);
 

@@ -4,10 +4,7 @@ import android.content.Context;
 import android.os.Environment;
 import android.text.TextUtils;
 
-import com.lu.rxhttp.util.HttpUtil;
-
 import java.io.File;
-import java.io.IOException;
 
 /**
  * Author: luqihua
@@ -68,21 +65,6 @@ public class FileStorageUtil {
 
     public File getFileByName(String name) {
         return new File(getAppRootFile(), name);
-    }
-
-    public File getFileCacheByUrl(String url) {
-
-        String fileName = HttpUtil.digest(url);
-
-        File file = new File(getAppRootFile(), fileName);
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return file;
     }
 
 }

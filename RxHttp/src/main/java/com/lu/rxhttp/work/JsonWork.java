@@ -2,16 +2,13 @@ package com.lu.rxhttp.work;
 
 import com.lu.rxhttp.Interface.IResponseBodyConvert;
 import com.lu.rxhttp.annotation.Body;
-import com.lu.rxhttp.annotation.Header;
-import com.lu.rxhttp.annotation.HeaderMap;
 import com.lu.rxhttp.annotation.POST;
-import com.lu.rxhttp.obj.HttpHeader;
+import com.lu.rxhttp.obj.HttpHeaderMap;
 import com.lu.rxhttp.request.JsonRequest;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.Map;
 
 import io.reactivex.functions.Function;
 import okhttp3.OkHttpClient;
@@ -31,9 +28,9 @@ public class JsonWork extends AWork {
     }
 
     @Override
-    Object invoke(final Method method, Object[] args) {
+    public Object invoke(final Method method, Object[] args) {
         if (!method.isAnnotationPresent(POST.class)) {
-            throw new RuntimeException("method need add  @POST(\"url\") ");
+            throw new RuntimeException("@JsonRequest method need add  @POST(\"url\") ");
         }
         //请求地址
         String url = method.getAnnotation(POST.class).value();
@@ -50,17 +47,13 @@ public class JsonWork extends AWork {
         Annotation[] annotations = checkoutParameter(method);
         int len = annotations.length;
 
+        HttpHeaderMap headers = getHttpHeaderMap(annotations, args);
+
         Object requestBody = null;
-        HttpHeader headers = new HttpHeader();
 
         for (int i = 0; i < len; i++) {
             Annotation annotation = annotations[i];
-
-            if (annotation instanceof Header) {
-                headers.put(((Header) annotation).value(), (String) args[i]);
-            } else if (annotation instanceof HeaderMap) {
-                headers.putAll((Map<? extends String, ? extends String>) args[i]);
-            } else if (annotation instanceof Body) {
+            if (annotation instanceof Body) {
                 if (requestBody == null) {
                     requestBody = args[i];
                 } else {
@@ -82,7 +75,7 @@ public class JsonWork extends AWork {
                     @Override
                     public Object apply(ResponseBody responseBody) throws Exception {
                         if (responseBodyConvert != null) {
-                            return responseBodyConvert.convert(responseBody);
+                            return responseBodyConvert.convert(responseBody, returnType);
                         } else {
                             return gson.fromJson(responseBody.string(), returnType);
                         }

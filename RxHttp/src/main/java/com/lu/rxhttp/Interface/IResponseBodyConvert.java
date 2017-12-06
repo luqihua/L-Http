@@ -1,5 +1,7 @@
 package com.lu.rxhttp.Interface;
 
+import java.lang.reflect.Type;
+
 import okhttp3.ResponseBody;
 
 /**
@@ -9,5 +11,5 @@ import okhttp3.ResponseBody;
  */
 
 public interface IResponseBodyConvert {
-    <T> T convert(ResponseBody responseBody);
+    <T> T convert(ResponseBody responseBody, Type type);
 }

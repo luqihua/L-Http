@@ -7,7 +7,7 @@ import com.lu.rxhttp.Interface.IRequest;
 import com.lu.rxhttp.intercept.CacheIntercept;
 import com.lu.rxhttp.intercept.LogInterceptor;
 import com.lu.rxhttp.obj.HttpException;
-import com.lu.rxhttp.obj.HttpHeader;
+import com.lu.rxhttp.obj.HttpHeaderMap;
 import com.lu.rxhttp.util.Const;
 
 import java.util.HashMap;
@@ -37,7 +37,7 @@ public abstract class AbstractRequest<T extends AbstractRequest> implements IReq
     protected OkHttpClient mClient;
     protected String mUrl;
     protected String mMethod = Const.POST;//default post request
-    protected HttpHeader mHeaders = new HttpHeader();
+    protected HttpHeaderMap mHeaders = new HttpHeaderMap();
     protected Map<String, String> mParams = new HashMap<>();
     protected String mTag;
     protected boolean isLog;//print log or not
@@ -76,7 +76,7 @@ public abstract class AbstractRequest<T extends AbstractRequest> implements IReq
     }
 
     @Override
-    public T headers(HttpHeader headers) {
+    public T headers(HttpHeaderMap headers) {
         this.mHeaders.putAll(headers);
         return obj;
     }

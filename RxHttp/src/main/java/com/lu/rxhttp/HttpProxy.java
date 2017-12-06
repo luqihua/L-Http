@@ -3,7 +3,12 @@ package com.lu.rxhttp;
 import android.support.annotation.Nullable;
 
 import com.lu.rxhttp.Interface.IResponseBodyConvert;
-import com.lu.rxhttp.work.HttpDispatcher;
+import com.lu.rxhttp.annotation.Form;
+import com.lu.rxhttp.annotation.Json;
+import com.lu.rxhttp.annotation.MultiPart;
+import com.lu.rxhttp.work.FormWork;
+import com.lu.rxhttp.work.JsonWork;
+import com.lu.rxhttp.work.MultiPartWork;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -19,10 +24,17 @@ import okhttp3.OkHttpClient;
 
 public class HttpProxy {
 
-    private HttpDispatcher mDispatcher;
+    private String baseUrl;
+    private OkHttpClient client;
+    private IResponseBodyConvert responseBodyConvert;
 
     private HttpProxy(Builder builder) {
-        this.mDispatcher = new HttpDispatcher(builder.baseUrl, builder.client, builder.responseBodyConvert);
+        this.baseUrl = builder.baseUrl;
+        if (baseUrl == null || !baseUrl.startsWith("http")) {
+            throw new RuntimeException("incorrect base_url");
+        }
+        this.client = builder.client == null ? new OkHttpClient() : builder.client;
+        this.responseBodyConvert = builder.responseBodyConvert;
     }
 
     public <T> T create(final Class<T> service) {
@@ -33,15 +45,29 @@ public class HttpProxy {
                         if (method.getDeclaringClass() == Object.class) {
                             return method.invoke(this, args);
                         }
-                        return mDispatcher.dispatch(method, args);
+                        return dispatcher(method, args);
                     }
                 });
     }
 
 
+    private Object dispatcher(final Method method, @Nullable Object[] args) {
+        //请求类型
+        if (method.isAnnotationPresent(Form.class)) {
+            return new FormWork(baseUrl, client,responseBodyConvert).invoke(method, args);
+        } else if (method.isAnnotationPresent(MultiPart.class)) {
+            return new MultiPartWork(baseUrl, client,responseBodyConvert).invoke(method, args);
+        } else if (method.isAnnotationPresent(Json.class)) {
+            return new JsonWork(baseUrl, client,responseBodyConvert).invoke(method, args);
+        } else {
+            throw new RuntimeException("you need to add annotation ( @Form || @MultiPart || @Json ) to declare the quest Type");
+        }
+    }
+
+
     public static class Builder {
-        private OkHttpClient client;
         private String baseUrl = "";
+        private OkHttpClient client;
         private IResponseBodyConvert responseBodyConvert;
 
         public Builder client(OkHttpClient client) {

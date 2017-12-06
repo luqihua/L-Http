@@ -8,7 +8,7 @@ import java.util.HashMap;
  * Description: Header
  */
 
-public class HttpHeader extends HashMap<String, String> {
+public class HttpHeaderMap extends HashMap<String, String> {
     /*public header*/
     private final String CACHE_CONTROL = "Cache-Control";
     private final String PRAGMA = "Pragma";
