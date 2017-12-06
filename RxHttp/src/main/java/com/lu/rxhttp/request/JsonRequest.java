@@ -3,9 +3,6 @@ package com.lu.rxhttp.request;
 import com.google.gson.Gson;
 import com.lu.rxhttp.util.Const;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 
@@ -17,19 +14,12 @@ import okhttp3.RequestBody;
 
 public class JsonRequest extends AbstractRequest<JsonRequest> {
 
-    private Map<String, Object> mJsonBodyMap = new HashMap<>();
     private String mJsonBody;
 
     public JsonRequest() {
         this.obj = this;
         this.mMethod = Const.POST;
     }
-
-    public JsonRequest addJsonBody(String body) {
-        this.mJsonBody = body;
-        return this;
-    }
-
 
     public JsonRequest addJsonBody(Object body) {
         this.mJsonBody = new Gson().toJson(body);
@@ -39,9 +29,8 @@ public class JsonRequest extends AbstractRequest<JsonRequest> {
     @Override
     protected RequestBody createRequestBody() {
         if (mJsonBody == null) {
-            mJsonBody = new Gson().toJson(mJsonBodyMap);
+            mJsonBody = new Gson().toJson(mParams);
         }
-        RequestBody body = RequestBody.create(MediaType.parse("application/json"), mJsonBody);
-        return body;
+        return RequestBody.create(MediaType.parse("application/json; charset=UTF-8"), mJsonBody);
     }
 }

@@ -1,5 +1,6 @@
 package com.lu.rxhttp.work;
 
+import com.lu.rxhttp.Interface.IResponseBodyConvert;
 import com.lu.rxhttp.annotation.Body;
 import com.lu.rxhttp.annotation.Header;
 import com.lu.rxhttp.annotation.HeaderMap;
@@ -9,10 +10,12 @@ import com.lu.rxhttp.request.JsonRequest;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.Map;
 
 import io.reactivex.functions.Function;
 import okhttp3.OkHttpClient;
+import okhttp3.ResponseBody;
 
 /**
  * Author: luqihua
@@ -22,8 +25,9 @@ import okhttp3.OkHttpClient;
 
 public class JsonWork extends AWork {
 
-    public JsonWork(String baseUrl, OkHttpClient client) {
-        super(baseUrl, client);
+
+    public JsonWork(String baseUrl, OkHttpClient client, IResponseBodyConvert convert) {
+        super(baseUrl, client, convert);
     }
 
     @Override
@@ -43,19 +47,14 @@ public class JsonWork extends AWork {
         }
 
         //解析参数
-        Annotation[][] annotationSS = checkoutParameter(method, args);
-        int len = annotationSS.length;
+        Annotation[] annotations = checkoutParameter(method);
+        int len = annotations.length;
 
         Object requestBody = null;
         HttpHeader headers = new HttpHeader();
 
         for (int i = 0; i < len; i++) {
-            if (annotationSS[i].length != 1) {
-                //每个参数只能有一个注解，为了保证参数类型的正确性
-                throw new RuntimeException("evey parameter need one annotation");
-            }
-
-            Annotation annotation = annotationSS[i][0];
+            Annotation annotation = annotations[i];
 
             if (annotation instanceof Header) {
                 headers.put(((Header) annotation).value(), (String) args[i]);
@@ -70,18 +69,25 @@ public class JsonWork extends AWork {
             }
         }
 
+        final Type returnType = getReturnType(method);
+
         return new JsonRequest()
                 .url(url)
                 .client(client)
                 .log(true)
                 .headers(headers)
                 .addJsonBody(requestBody)
-                .observerString()
-                .map(new Function<String, Object>() {
+                .observerResponseBody()
+                .map(new Function<ResponseBody, Object>() {
                     @Override
-                    public Object apply(String s) throws Exception {
-                        return parseResult(s, method);
+                    public Object apply(ResponseBody responseBody) throws Exception {
+                        if (responseBodyConvert != null) {
+                            return responseBodyConvert.convert(responseBody);
+                        } else {
+                            return gson.fromJson(responseBody.string(), returnType);
+                        }
                     }
                 });
+
     }
 }

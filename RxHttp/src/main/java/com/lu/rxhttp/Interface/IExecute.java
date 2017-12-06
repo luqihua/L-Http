@@ -1,6 +1,8 @@
 package com.lu.rxhttp.Interface;
 
 import io.reactivex.Observable;
+import okhttp3.Call;
+import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
 
 /**
@@ -13,5 +15,7 @@ public interface IExecute {
 
     Observable<ResponseBody> observerResponseBody();
 
-    Observable<String> observerString();
+    Call newCall();
+
+    OkHttpClient getClient();
 }

@@ -3,8 +3,6 @@ package com.lu.rxhttp.obj;
 import android.content.Context;
 import android.os.Environment;
 
-import com.lu.rxhttp.util.Const;
-
 import java.io.File;
 
 import okhttp3.Cache;
@@ -17,9 +15,17 @@ import okhttp3.Cache;
 
 public class OkCache {
 
+    private static final long DEFAULT_CACHE_SIZE = 10 * 1024 * 1024;
+    private static final String DEFAULT_CACHE_DIR = "okcache";
+
+
     private Context mContext;
     private String mCacheDirs;
-    private long mCacheSize = Const.MAX_CACHE_SIZE;
+    private long mCacheSize;
+
+
+    public OkCache() {
+    }
 
     public OkCache(Context context) {
         this.mContext = context;
@@ -44,24 +50,22 @@ public class OkCache {
     public Cache createCache() {
         File file = null;
 
-        if (mCacheDirs != null) {
+        if (mCacheDirs != null && mCacheDirs.length() > 0) {
             file = new File(mCacheDirs);
-            if (file != null) {
-                return new Cache(file, mCacheSize);
-            }
+        } else if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            file = new File(Environment.getExternalStorageDirectory(), DEFAULT_CACHE_DIR);
+        } else if (mContext != null) {
+            file = new File(mContext.getExternalCacheDir(), DEFAULT_CACHE_DIR);
         }
 
-        if (mContext != null) {
-            file = new File(mContext.getExternalCacheDir(), Const.HTTP_CACHE_DIR);
-        } else {
-            if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-                file = new File(Environment.getExternalStorageDirectory(), Const.HTTP_CACHE_DIR);
-            }
+        if (file == null)
+            return null;
+
+        if (!file.exists()) {
+            file.mkdirs();
         }
-        if (file != null) {
-            return new Cache(file, Const.MAX_CACHE_SIZE);
-        }
-        return null;
+
+        return new Cache(file, DEFAULT_CACHE_SIZE);
     }
 
 }

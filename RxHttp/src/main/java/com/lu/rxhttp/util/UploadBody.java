@@ -2,7 +2,7 @@ package com.lu.rxhttp.util;
 
 import android.os.Looper;
 
-import com.lu.rxhttp.Interface.ProgressCallBack;
+import com.lu.rxhttp.Interface.IProgressCallBack;
 
 import java.io.IOException;
 
@@ -27,7 +27,7 @@ public class UploadBody extends RequestBody {
     private BufferedSink bufferedSink;
     public UIHandler mHandler;
 
-    public UploadBody(RequestBody requestBody, ProgressCallBack listener) {
+    public UploadBody(RequestBody requestBody, IProgressCallBack listener) {
         this.requestBody = requestBody;
         mHandler = new UIHandler(Looper.getMainLooper(), listener);
     }

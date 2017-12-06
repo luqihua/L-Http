@@ -8,8 +8,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.lu.rxhttp.Interface.ProgressCallBack;
-import com.lu.rxhttp.util.FileStorageUtil;
+import com.lu.rxhttp.Interface.IProgressCallBack;
 import com.lu.rxhttp.util.HttpUtil;
 
 import java.io.File;
@@ -27,6 +26,7 @@ import lu.httpdemo.HttpClient;
 import lu.httpdemo.R;
 import lu.httpdemo.bean.HttpResult;
 import lu.httpdemo.util.BindView;
+import lu.httpdemo.util.FileStorageUtil;
 import lu.httpdemo.util.InjectUtil;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -99,7 +99,7 @@ public class MultiPartActivity extends AppCompatActivity {
 
         HttpClient.getApiService()
                 .upload("luqihua", "123456", imageFile1,
-                        new ProgressCallBack() {
+                        new IProgressCallBack() {
                             @Override
                             public void onProgressChange(int progress) {
                                 mProgressBar.setProgress(progress);
@@ -157,7 +157,7 @@ public class MultiPartActivity extends AppCompatActivity {
 
         HttpClient.getApiService()
                 .multiUpload(builder.build(),
-                        new ProgressCallBack() {
+                        new IProgressCallBack() {
                             @Override
                             public void onProgressChange(int progress) {
                                 mProgressBar.setProgress(progress);

@@ -4,7 +4,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 
-import com.lu.rxhttp.Interface.ProgressCallBack;
+import com.lu.rxhttp.Interface.IProgressCallBack;
 
 import java.lang.ref.WeakReference;
 
@@ -15,16 +15,16 @@ import java.lang.ref.WeakReference;
  */
 
 public class UIHandler extends Handler {
-    private WeakReference<ProgressCallBack> weakReference;
+    private WeakReference<IProgressCallBack> weakReference;
 
-    public UIHandler(Looper looper, ProgressCallBack callBack) {
+    public UIHandler(Looper looper, IProgressCallBack callBack) {
         super(looper);
         this.weakReference = new WeakReference<>(callBack);
     }
 
     @Override
     public void handleMessage(Message msg) {
-        ProgressCallBack callBack = weakReference.get();
+        IProgressCallBack callBack = weakReference.get();
         if (callBack != null) {
             callBack.onProgressChange(msg.what);
         }

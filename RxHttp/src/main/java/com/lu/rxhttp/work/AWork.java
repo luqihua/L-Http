@@ -2,6 +2,7 @@ package com.lu.rxhttp.work;
 
 
 import com.google.gson.Gson;
+import com.lu.rxhttp.Interface.IResponseBodyConvert;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -21,63 +22,54 @@ public abstract class AWork {
 
     String baseUrl;
     OkHttpClient client;
+    IResponseBodyConvert responseBodyConvert;
     Gson gson = new Gson();
 
-    public AWork(String baseUrl, OkHttpClient client) {
+    public AWork(String baseUrl, OkHttpClient client, IResponseBodyConvert convert) {
         this.baseUrl = baseUrl;
         this.client = client;
-    }
-
-    //解析方法的返回值，去除 Observable<>层，取里面的泛型
-    private Type parseReturnType(Method method) {
-        Type type = method.getGenericReturnType();
-        if (type instanceof ParameterizedType) {
-            Type[] types = ((ParameterizedType) type).getActualTypeArguments();
-            if (types.length != 1) {
-                throw new RuntimeException("return type error");
-            }
-        } else {
-            throw new RuntimeException("return type error");
-        }
-
-        return ((ParameterizedType) type).getActualTypeArguments()[0];
+        this.responseBodyConvert = convert;
     }
 
     /**
      * 检验参数是否合法（每个形参必须带有注解标记）
      *
      * @param method
-     * @param args
      * @return
      */
-    public Annotation[][] checkoutParameter(Method method, Object[] args) {
-        Annotation[][] annotationSS = method.getParameterAnnotations();
-        int len = annotationSS.length;
-        if (len != args.length) {
-            throw new RuntimeException("some parameter do not have annotations");
+    public Annotation[] checkoutParameter(Method method) {
+        Annotation[][] annSS = method.getParameterAnnotations();
+        int len = annSS.length;
+
+        Annotation[] annotations = new Annotation[len];
+
+        for (int i = 0; i < len; i++) {
+            if (annSS[i].length < 1) {
+                throw new RuntimeException("every parameter need one annotation");
+            }
+            //每个参数只有第一个注解生效，为了保证参数类型的正确性
+            annotations[i] = annSS[i][0];
         }
-        return annotationSS;
+
+        return annotations;
     }
 
+
     /**
-     * 解析返回结果，如果用户想要得到string  则不进行json转换
+     * 解析返回值类型
      *
      * @param method
      * @return
      */
-    public Object parseResult(String jsonStr, Method method) {
+    public Type getReturnType(Method method) {
         Type type = method.getGenericReturnType();
         if (type instanceof ParameterizedType) {
             ParameterizedType pType = (ParameterizedType) type;
             if (pType.getRawType().equals(Observable.class)) {
-                Type[] types = pType.getActualTypeArguments();
-                return gson.fromJson(jsonStr, types[0]);
-            } else {
-                throw new RuntimeException("return type must an io.reactivex.Observable<Bean>");
+                type = pType.getActualTypeArguments()[0];
             }
-        } else {
-            throw new RuntimeException("return type error");
         }
+        return type;
     }
 
     abstract Object invoke(final Method method, final Object[] args);

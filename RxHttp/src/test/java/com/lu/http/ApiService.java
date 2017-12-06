@@ -8,7 +8,7 @@ import io.reactivex.Observable;
  * Created by 82172 on 2017/11/30.
  */
 public interface ApiService {
-    @POST("http://localhost:8080/api/login")
+    @POST("http://119.23.237.24:8080/apidemo/api/login")
     Observable<HttpResult<UserInfo>> login(@Field("username") String username, @Field("password") String password);
 
 

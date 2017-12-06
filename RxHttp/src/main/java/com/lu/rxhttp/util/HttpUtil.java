@@ -3,8 +3,6 @@ package com.lu.rxhttp.util;
 import android.webkit.MimeTypeMap;
 
 import java.io.File;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 /**
  * Author: luqihua
@@ -29,36 +27,4 @@ public class HttpUtil {
         }
         return mime;
     }
-
-    /**
-     * digest the context by md5
-     *
-     * @param content
-     * @return
-     */
-    public static String digest(String content) {
-
-        StringBuffer buffer = new StringBuffer("");
-        try {
-            MessageDigest md5 = MessageDigest.getInstance("md5");
-
-            byte[] bytes = md5.digest(content.getBytes());
-
-            int len = bytes.length;
-
-            for (int i = 0; i < len; i++) {
-                int value = bytes[i] & 0xff;
-                if (value < 16) {
-                    buffer.append("0");
-                }
-                buffer.append(Integer.toHexString(value));
-            }
-
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-
-        return buffer.toString();
-    }
-
 }

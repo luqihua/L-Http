@@ -2,7 +2,6 @@ package com.lu.http;
 
 import com.google.gson.Gson;
 
-import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -20,7 +19,6 @@ import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import okhttp3.ResponseBody;
 
 /**
  * Created by 82172 on 2017/11/30.
@@ -33,14 +31,44 @@ public class HttpProxy {
                 , new InvocationHandler() {
                     @Override
                     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                        return parseRequest(proxy, method, args);
+                        return parseRequest(method, args);
                     }
                 }
         );
     }
 
-    public Object parseRequest(Object proxy, Method method, Object[] args) {
+    public Object parseRequest(Method method, Object[] args) {
 
+        //解析请求url和方法
+        String url = "";//请求url
+        String md = "POST";//请求方法，默认给POST
+
+        if (method.isAnnotationPresent(POST.class)) {
+            url = method.getAnnotation(POST.class).value();
+            //打印看下
+            System.out.println("请求地址: " + url);
+            md = "POST";
+        }
+
+        //解析请求参数
+        Map<String, String> params = getParams(method, args);
+
+        //解析返回值类型
+        final Type resultType = getResultType(method);
+
+        //发送请求并返回结果
+        return parseResult(url, md, params, resultType);
+    }
+
+
+    /**
+     * 获取http请求参数
+     *
+     * @param method
+     * @param args
+     * @return
+     */
+    private Map<String, String> getParams(Method method, Object[] args) {
         //该操作用于返回方法参数注解，由于方法参数可以有多个，而每个参数又可以有多个注解，所以返回的是一个二维数组。
         Annotation[][] annotationSS = method.getParameterAnnotations();
 
@@ -59,6 +87,17 @@ public class HttpProxy {
                 params.put(((Field) att).value(), (String) args[i]);
             }
         }
+        return params;
+    }
+
+
+    /**
+     * 获取结果解析类型
+     *
+     * @param method
+     * @return
+     */
+    private Type getResultType(Method method) {
         //解析返回值,
         Type resultType = method.getGenericReturnType();
         /**
@@ -77,45 +116,43 @@ public class HttpProxy {
             //得到Observable<T>中T的类型
             resultType = types[0];
         }
+        return resultType;
+    }
 
 
-        //解析请求url和方法
-        String url = "";//请求url
-        String md = "POST";//请求方法，默认给POST
-
-        if (method.isAnnotationPresent(POST.class)) {
-            url = method.getAnnotation(POST.class).value();
-            //打印看下
-            System.out.println("请求地址: " + url);
-            md = "POST";
-        }
+    /**
+     * 发送网络请求并将结果解析成方法定义的返回值类型
+     * @param url 请求地址
+     * @param method 请求方法
+     * @param params 请求参数
+     * @param type  结果解析类型
+     * @return
+     */
+    public Object parseResult(String url, String method, Map<String, String> params, final Type type) {
 
         //添加请求参数体
         FormBody.Builder bodyBuilder = new FormBody.Builder();
         for (String key : params.keySet()) {
             bodyBuilder.add(key, params.get(key));
         }
+
         //构建请求
         final Request request = new Request.Builder()
                 .url(url)
-                .method(md, bodyBuilder.build())
+                .method(method, bodyBuilder.build())
                 .build();
-
-        OkHttpClient client = new OkHttpClient();
-
-
-        final Call call = client.newCall(request);
-        final Type type = resultType;//返回结果定义成final类型才能在rxjava中使用
 
 
         //parseRequest的返回值从这一步开始变成我们需要的Observable<T>
         return Observable.create(new ObservableOnSubscribe<Object>() {
             @Override
             public void subscribe(ObservableEmitter<Object> emitter) throws Exception {
+                final Call call = new OkHttpClient().newCall(request);
                 Response response = call.execute();
                 if (response.isSuccessful()) {
                     //解析结果
-                    emitter.onNext(parseResult(response.body(), type));
+                    String data = response.body().string();
+                    emitter.onNext(new Gson().fromJson(data, type));
                 } else {
                     // TODO: 异常处理 先简单处理
                     emitter.onError(new Exception("http error"));
@@ -123,20 +160,5 @@ public class HttpProxy {
                 emitter.onComplete();
             }
         });
-    }
-
-
-    /**
-     * 将结果解析成方法定义的返回值类型
-     *
-     * @param responseBody
-     * @param resultType
-     * @return
-     * @throws IOException
-     */
-    public Object parseResult(ResponseBody responseBody, Type resultType) throws IOException {
-        String data = responseBody.string();
-        //将服务器返回的字符串解析成我们需要的bean对象
-        return new Gson().fromJson(data, resultType);
     }
 }

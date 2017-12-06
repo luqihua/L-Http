@@ -6,8 +6,6 @@ import com.lu.rxhttp.util.Const;
 import java.util.Map;
 
 import okhttp3.CacheControl;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
 
 /**
  * Author: luqihua
@@ -32,9 +30,5 @@ public interface IRequest<T> {
     T cacheControl(CacheControl control);
 
     T forceCache(String forceCache);
-
-    Request newRequest();
-
-    OkHttpClient getClient();
 
 }

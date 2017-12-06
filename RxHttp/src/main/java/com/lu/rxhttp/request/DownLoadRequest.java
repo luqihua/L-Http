@@ -1,8 +1,6 @@
 package com.lu.rxhttp.request;
 
-import android.text.TextUtils;
-
-import com.lu.rxhttp.Interface.ProgressCallBack;
+import com.lu.rxhttp.Interface.IProgressCallBack;
 import com.lu.rxhttp.util.Const;
 import com.lu.rxhttp.util.DownloadBody;
 
@@ -12,10 +10,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Function;
-import io.reactivex.schedulers.Schedulers;
 import okhttp3.FormBody;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
@@ -29,7 +25,7 @@ import okhttp3.ResponseBody;
 public class DownLoadRequest extends AbstractRequest<DownLoadRequest> {
 
     private File file;
-    private ProgressCallBack mProgressCallback;
+    private IProgressCallBack mProgressCallback;
 
     public DownLoadRequest() {
         this.obj = this;
@@ -46,15 +42,8 @@ public class DownLoadRequest extends AbstractRequest<DownLoadRequest> {
         return this;
     }
 
-    public DownLoadRequest progress(ProgressCallBack callback) {
+    public DownLoadRequest progress(IProgressCallBack callback) {
         this.mProgressCallback = callback;
-        return this;
-    }
-
-    public DownLoadRequest targetFilePath(String path) {
-        if (!TextUtils.isEmpty(path)) {
-            this.file = new File(path);
-        }
         return this;
     }
 
@@ -111,9 +100,7 @@ public class DownLoadRequest extends AbstractRequest<DownLoadRequest> {
                         }
                         return file.getAbsolutePath();
                     }
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
+                });
     }
 
 }

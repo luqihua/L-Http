@@ -1,6 +1,7 @@
 package com.lu.rxhttp.work;
 
-import com.lu.rxhttp.Interface.ProgressCallBack;
+import com.lu.rxhttp.Interface.IProgressCallBack;
+import com.lu.rxhttp.Interface.IResponseBodyConvert;
 import com.lu.rxhttp.annotation.Field;
 import com.lu.rxhttp.annotation.FieldMap;
 import com.lu.rxhttp.annotation.FilePart;
@@ -12,12 +13,14 @@ import com.lu.rxhttp.request.MultiPartRequest;
 import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import io.reactivex.functions.Function;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
+import okhttp3.ResponseBody;
 
 /**
  * Author: luqihua
@@ -27,8 +30,9 @@ import okhttp3.OkHttpClient;
 
 public class MultiPartWork extends AWork {
 
-    public MultiPartWork(String baseUrl, OkHttpClient client) {
-        super(baseUrl, client);
+
+    public MultiPartWork(String baseUrl, OkHttpClient client, IResponseBodyConvert convert) {
+        super(baseUrl, client, convert);
     }
 
     @Override
@@ -43,36 +47,35 @@ public class MultiPartWork extends AWork {
             url = baseUrl + url;
         }
 
-        Annotation[][] annotationSS = checkoutParameter(method, args);
+        Annotation[] annotations = checkoutParameter(method);
+        int len = annotations.length;
 
         Map<String, String> params = new LinkedHashMap<>();
         Map<String, File> fileData = new LinkedHashMap<>();
         MultipartBody body = null;
-        ProgressCallBack callBack = null;
+        IProgressCallBack callBack = null;
 
-
-        int len = annotationSS.length;
 
         for (int i = 0; i < len; i++) {
-            for (Annotation annotation : annotationSS[i]) {
-                if (annotation instanceof Field) {
-                    params.put(((Field) annotation).value(), (String) args[i]);
-                } else if (annotation instanceof FilePart) {
-                    fileData.put(((FilePart) annotation).value(), (File) args[i]);
-                } else if (annotation instanceof ProgressListener) {
-                    callBack = (ProgressCallBack) args[i];
-                } else if (annotation instanceof FieldMap) {
-                    fileData.putAll((Map<? extends String, ? extends File>) args[i]);
-                } else if (annotation instanceof MultiBody) {
-                    if (args[i] instanceof MultipartBody) {
-                        body = (MultipartBody) args[i];
-                    } else {
-                        throw new RuntimeException("@MultiPart just can be annotation at MultipartBody parameter");
-                    }
+            Annotation annotation = annotations[i];
+            if (annotation instanceof Field) {
+                params.put(((Field) annotation).value(), (String) args[i]);
+            } else if (annotation instanceof FilePart) {
+                fileData.put(((FilePart) annotation).value(), (File) args[i]);
+            } else if (annotation instanceof ProgressListener) {
+                callBack = (IProgressCallBack) args[i];
+            } else if (annotation instanceof FieldMap) {
+                fileData.putAll((Map<? extends String, ? extends File>) args[i]);
+            } else if (annotation instanceof MultiBody) {
+                if (args[i] instanceof MultipartBody) {
+                    body = (MultipartBody) args[i];
+                } else {
+                    throw new RuntimeException("@MultiPart just can be annotation at MultipartBody parameter");
                 }
             }
         }
 
+        final Type returnType = getReturnType(method);
 
         return new MultiPartRequest()
                 .url(url)
@@ -81,11 +84,15 @@ public class MultiPartWork extends AWork {
                 .multipartBody(body)
                 .files(fileData)
                 .progress(callBack)
-                .observerString()
-                .map(new Function<String, Object>() {
+                .observerResponseBody()
+                .map(new Function<ResponseBody, Object>() {
                     @Override
-                    public Object apply(String s) throws Exception {
-                        return parseResult(s, method);
+                    public Object apply(ResponseBody responseBody) throws Exception {
+                        if (responseBodyConvert != null) {
+                            return responseBodyConvert.convert(responseBody);
+                        } else {
+                            return gson.fromJson(responseBody.string(), returnType);
+                        }
                     }
                 });
     }

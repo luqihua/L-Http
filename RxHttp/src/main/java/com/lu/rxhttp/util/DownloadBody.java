@@ -2,7 +2,7 @@ package com.lu.rxhttp.util;
 
 import android.os.Looper;
 
-import com.lu.rxhttp.Interface.ProgressCallBack;
+import com.lu.rxhttp.Interface.IProgressCallBack;
 
 import java.io.IOException;
 
@@ -27,7 +27,7 @@ public class DownloadBody extends ResponseBody {
     private UIHandler mHandler;
     private BufferedSource bufferedSource;
 
-    public DownloadBody(ResponseBody responseBody, ProgressCallBack callBack) {
+    public DownloadBody(ResponseBody responseBody, IProgressCallBack callBack) {
         this.responseBody = responseBody;
         this.mHandler = new UIHandler(Looper.getMainLooper(), callBack);
     }

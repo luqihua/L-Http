@@ -1,6 +1,6 @@
 package com.lu.rxhttp.request;
 
-import com.lu.rxhttp.Interface.ProgressCallBack;
+import com.lu.rxhttp.Interface.IProgressCallBack;
 import com.lu.rxhttp.util.HttpUtil;
 import com.lu.rxhttp.util.UploadBody;
 
@@ -21,7 +21,7 @@ import okhttp3.RequestBody;
 public class MultiPartRequest extends AbstractRequest<MultiPartRequest> {
 
     private Map<String, File> mFileData = new LinkedHashMap<>();
-    private ProgressCallBack mProgressCallback;
+    private IProgressCallBack mProgressCallback;
     private MultipartBody multipartBody;
 
     public MultiPartRequest() {
@@ -38,7 +38,7 @@ public class MultiPartRequest extends AbstractRequest<MultiPartRequest> {
         return this;
     }
 
-    public MultiPartRequest progress(ProgressCallBack callback) {
+    public MultiPartRequest progress(IProgressCallBack callback) {
         this.mProgressCallback = callback;
         return this;
     }
@@ -76,6 +76,7 @@ public class MultiPartRequest extends AbstractRequest<MultiPartRequest> {
         }
 
         RequestBody body = multipartBuilder.build();
+
         //根据ProgressCallBack的值是否为空判断是否需要包装requestBody检测进度
         if (mProgressCallback != null) {
             body = new UploadBody(body, mProgressCallback);

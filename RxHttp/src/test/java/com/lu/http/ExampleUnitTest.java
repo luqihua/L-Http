@@ -3,6 +3,9 @@ package com.lu.http;
 
 import org.junit.Test;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+
 import io.reactivex.functions.Consumer;
 
 /**
@@ -35,6 +38,32 @@ public class ExampleUnitTest {
 //                    }
 //                });
 
+    }
+
+
+    @Test
+    public void test() {
+        try {
+            Hello hello = new Hello();
+
+            Method method = hello.getClass().getDeclaredMethod("test", String.class, String.class);
+
+            Annotation[][] annotations = method.getParameterAnnotations();
+            System.out.println(annotations.length);
+
+            for (Annotation[] annotation : annotations) {
+                System.out.println("len:  "+annotation.length);
+            }
+
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public static class Hello {
+        public void test(@Field String hello, String name) {
+        }
     }
 
 }

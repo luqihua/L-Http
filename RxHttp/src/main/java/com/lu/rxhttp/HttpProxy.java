@@ -2,6 +2,7 @@ package com.lu.rxhttp;
 
 import android.support.annotation.Nullable;
 
+import com.lu.rxhttp.Interface.IResponseBodyConvert;
 import com.lu.rxhttp.work.HttpDispatcher;
 
 import java.lang.reflect.InvocationHandler;
@@ -17,10 +18,11 @@ import okhttp3.OkHttpClient;
  */
 
 public class HttpProxy {
+
     private HttpDispatcher mDispatcher;
 
     private HttpProxy(Builder builder) {
-        this.mDispatcher = new HttpDispatcher(builder.baseUrl,builder.client);
+        this.mDispatcher = new HttpDispatcher(builder.baseUrl, builder.client, builder.responseBodyConvert);
     }
 
     public <T> T create(final Class<T> service) {
@@ -40,6 +42,7 @@ public class HttpProxy {
     public static class Builder {
         private OkHttpClient client;
         private String baseUrl = "";
+        private IResponseBodyConvert responseBodyConvert;
 
         public Builder client(OkHttpClient client) {
             this.client = client;
@@ -48,6 +51,11 @@ public class HttpProxy {
 
         public Builder baseUrl(String url) {
             this.baseUrl = url;
+            return this;
+        }
+
+        public Builder responseBodyConvert(IResponseBodyConvert convert) {
+            this.responseBodyConvert = convert;
             return this;
         }
 

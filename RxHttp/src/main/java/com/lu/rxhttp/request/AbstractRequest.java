@@ -4,7 +4,6 @@ import android.text.TextUtils;
 
 import com.lu.rxhttp.Interface.IExecute;
 import com.lu.rxhttp.Interface.IRequest;
-import com.lu.rxhttp.RxHttp;
 import com.lu.rxhttp.intercept.CacheIntercept;
 import com.lu.rxhttp.intercept.LogInterceptor;
 import com.lu.rxhttp.obj.HttpException;
@@ -18,7 +17,6 @@ import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Function;
 import okhttp3.CacheControl;
 import okhttp3.Call;
 import okhttp3.HttpUrl;
@@ -36,23 +34,15 @@ import okhttp3.ResponseBody;
 
 public abstract class AbstractRequest<T extends AbstractRequest> implements IRequest<T>, IExecute {
 
-    OkHttpClient mClient;
-
-    String mUrl;
-
-    String mMethod = Const.POST;//default post request
-
-    HttpHeader mHeaders = new HttpHeader();
-
-    Map<String, String> mParams = new HashMap<>();
-
-    String mTag;
-
-    boolean isLog;//print log or not
-
-    CacheControl mCacheControl;//local cache rule
-
-    String mForceCache;//change the header:Cache-Control of response
+    protected OkHttpClient mClient;
+    protected String mUrl;
+    protected String mMethod = Const.POST;//default post request
+    protected HttpHeader mHeaders = new HttpHeader();
+    protected Map<String, String> mParams = new HashMap<>();
+    protected String mTag;
+    protected boolean isLog;//print log or not
+    protected CacheControl mCacheControl;//local cache rule
+    protected String mForceCache;//change the header:Cache-Control of response
 
     protected T obj;
 
@@ -109,13 +99,12 @@ public abstract class AbstractRequest<T extends AbstractRequest> implements IReq
         return obj;
     }
 
-
     public String getUrl() {
         return mUrl;
     }
 
     @Override
-    public Request newRequest() {
+    public Call newCall() {
 
         Request.Builder builder = new Request.Builder().url(mUrl);
          /*add headers*/
@@ -142,12 +131,10 @@ public abstract class AbstractRequest<T extends AbstractRequest> implements IReq
                 urlBuilder.addQueryParameter(key, mParams.get(key));
             }
             builder.url(urlBuilder.build().toString());
-            return builder.build();
+        } else {  //post请求
+            builder.post(createRequestBody());
         }
-
-        //post请求
-        builder.post(createRequestBody());
-        return builder.build();
+        return getClient().newCall(builder.build());
     }
 
     @Override
@@ -175,14 +162,8 @@ public abstract class AbstractRequest<T extends AbstractRequest> implements IReq
         return Observable.create(new ObservableOnSubscribe<ResponseBody>() {
             @Override
             public void subscribe(@NonNull ObservableEmitter<ResponseBody> emitter) throws Exception {
-                Request request = newRequest();
-                String tag = (String) request.tag();
                 try {
-                    Call call = getClient().newCall(request);
-
-                    if (tag != null) {
-                        RxHttp.addCall(tag, call);
-                    }
+                    Call call = newCall();
                     //execute
                     Response response = call.execute();
 
@@ -192,24 +173,12 @@ public abstract class AbstractRequest<T extends AbstractRequest> implements IReq
                         emitter.onError(HttpException.newInstance(response.code()));
                     }
                 } catch (Exception e) {
-                    emitter.onError(new HttpException(-1, e.toString()));
+                    emitter.onError(new HttpException(-1, e.getMessage()));
                 } finally {
-                    RxHttp.cancelCall(tag);
                     emitter.onComplete();
                 }
             }
         });
-    }
-
-    @Override
-    public Observable<String> observerString() {
-        return observerResponseBody()
-                .map(new Function<ResponseBody, String>() {
-                    @Override
-                    public String apply(@NonNull ResponseBody body) throws Exception {
-                        return body.string();
-                    }
-                });
     }
 
     protected abstract RequestBody createRequestBody();

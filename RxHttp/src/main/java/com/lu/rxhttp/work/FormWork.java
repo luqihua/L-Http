@@ -1,5 +1,6 @@
 package com.lu.rxhttp.work;
 
+import com.lu.rxhttp.Interface.IResponseBodyConvert;
 import com.lu.rxhttp.annotation.Field;
 import com.lu.rxhttp.annotation.FieldMap;
 import com.lu.rxhttp.annotation.GET;
@@ -12,11 +13,14 @@ import com.lu.rxhttp.util.Const;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.reactivex.ObservableSource;
 import io.reactivex.functions.Function;
 import okhttp3.OkHttpClient;
+import okhttp3.ResponseBody;
 
 /**
  * Author: luqihua
@@ -26,8 +30,9 @@ import okhttp3.OkHttpClient;
 
 public class FormWork extends AWork {
 
-    public FormWork(String baseUrl, OkHttpClient client) {
-        super(baseUrl, client);
+
+    public FormWork(String baseUrl, OkHttpClient client, IResponseBodyConvert convert) {
+        super(baseUrl, client, convert);
     }
 
     @Override
@@ -55,20 +60,16 @@ public class FormWork extends AWork {
         }
 
         //解析参数
-        Annotation[][] annotationSS = checkoutParameter(method, args);
-        int len = annotationSS.length;
+        Annotation[] annotations = checkoutParameter(method);
+        int len = annotations.length;
         //参数map
         Map<String, String> params = new HashMap<>();
         //请求头map
         HttpHeader headers = new HttpHeader();
 
         for (int i = 0; i < len; i++) {
-            if (annotationSS[i].length != 1) {
-                //每个参数只能有一个注解，为了保证参数类型的正确性
-                throw new RuntimeException("evey parameter need one annotation");
-            }
 
-            Annotation annotation = annotationSS[i][0];
+            Annotation annotation = annotations[0];
 
             if (annotation instanceof Field) {
                 params.put(((Field) annotation).value(), (String) args[i]);
@@ -81,6 +82,9 @@ public class FormWork extends AWork {
             }
         }
 
+        //返回值类型
+        final Type returnType = getReturnType(method);
+
         //构建请求执行访问操作
         return new FormRequest()
                 .url(url)
@@ -88,11 +92,15 @@ public class FormWork extends AWork {
                 .headers(headers)
                 .client(client)
                 .params(params)
-                .observerString()
-                .map(new Function<String, Object>() {
+                .observerResponseBody()
+                .flatMap(new Function<ResponseBody, ObservableSource<?>>() {
                     @Override
-                    public Object apply(String s) throws Exception {
-                        return parseResult(s, method);
+                    public ObservableSource<?> apply(ResponseBody responseBody) throws Exception {
+                        if (responseBodyConvert != null) {
+                            return responseBodyConvert.convert(responseBody);
+                        } else {
+                            return gson.fromJson(responseBody.string(), returnType);
+                        }
                     }
                 });
     }

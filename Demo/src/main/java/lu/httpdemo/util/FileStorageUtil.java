@@ -1,8 +1,10 @@
-package com.lu.rxhttp.util;
+package lu.httpdemo.util;
 
 import android.content.Context;
 import android.os.Environment;
 import android.text.TextUtils;
+
+import com.lu.rxhttp.util.HttpUtil;
 
 import java.io.File;
 import java.io.IOException;
