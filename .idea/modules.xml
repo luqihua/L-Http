@@ -2,9 +2,12 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Demo/Demo.iml" filepath="$PROJECT_DIR$/Demo/Demo.iml" />
-      <module fileurl="file://$PROJECT_DIR$/HttpStudio.iml" filepath="$PROJECT_DIR$/HttpStudio.iml" />
-      <module fileurl="file://$PROJECT_DIR$/RxHttp/RxHttp.iml" filepath="$PROJECT_DIR$/RxHttp/RxHttp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/apt-annotation/apt-annotation.iml" filepath="$PROJECT_DIR$/apt-annotation/apt-annotation.iml" />
+      <module fileurl="file://$PROJECT_DIR$/apt-processor/apt-processor.iml" filepath="$PROJECT_DIR$/apt-processor/apt-processor.iml" />
+      <module fileurl="file://$PROJECT_DIR$/aptdemo/aptdemo.iml" filepath="$PROJECT_DIR$/aptdemo/aptdemo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lib-http/lib-http.iml" filepath="$PROJECT_DIR$/lib-http/lib-http.iml" />
+      <module fileurl="file://$PROJECT_DIR$/libRxHttp.iml" filepath="$PROJECT_DIR$/libRxHttp.iml" />
     </modules>
   </component>
 </project>
