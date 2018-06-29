@@ -3,10 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/apt-annotation/apt-annotation.iml" filepath="$PROJECT_DIR$/apt-annotation/apt-annotation.iml" />
-      <module fileurl="file://$PROJECT_DIR$/apt-processor/apt-processor.iml" filepath="$PROJECT_DIR$/apt-processor/apt-processor.iml" />
-      <module fileurl="file://$PROJECT_DIR$/aptdemo/aptdemo.iml" filepath="$PROJECT_DIR$/aptdemo/aptdemo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lib-annotation/lib-annotation.iml" filepath="$PROJECT_DIR$/lib-annotation/lib-annotation.iml" />
       <module fileurl="file://$PROJECT_DIR$/lib-http/lib-http.iml" filepath="$PROJECT_DIR$/lib-http/lib-http.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lib-processor/lib-processor.iml" filepath="$PROJECT_DIR$/lib-processor/lib-processor.iml" />
       <module fileurl="file://$PROJECT_DIR$/libRxHttp.iml" filepath="$PROJECT_DIR$/libRxHttp.iml" />
     </modules>
   </component>
