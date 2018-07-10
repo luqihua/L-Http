@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
  * @Time: 2018/6/26
  * @Description: LRequest
  */
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface LRequest {
     String value();

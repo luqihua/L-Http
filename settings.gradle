@@ -1,1 +1,1 @@
-include ':lib-http', ':app', ':lib-processor', ':lib-annotation'
+include ':lib-http', ':app', ':lib-annotation'

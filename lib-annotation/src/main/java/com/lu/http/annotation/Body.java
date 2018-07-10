@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
  * @Time: 2018/6/25
  * @Description: Body
  */
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PARAMETER)
 public @interface Body {
 }

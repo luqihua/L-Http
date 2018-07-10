@@ -10,7 +10,9 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import com.lu.httpdemo.HttpClientRetrofit;
+
+import com.lu.httpdemo.HttpClient;
+
 import lu.httpdemo.R;
 
 import com.lu.httpdemo.bean.HttpResult;
@@ -37,7 +39,7 @@ public class JsonActivity extends AppCompatActivity {
         user.setAge(28);
         user.setPassword("helloworld");
 
-        HttpClientRetrofit.getApiService()
+        HttpClient.getApiService()
                 .loginJson(user)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

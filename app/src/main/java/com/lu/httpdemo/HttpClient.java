@@ -6,15 +6,15 @@ import com.lu.httpdemo.api.PhpService;
 /**
  * Author: luqihua
  * Time: 2017/11/24
- * Description: HttpClientRetrofit
+ * Description: HttpClient
  */
 
-public class HttpClientRetrofit {
+public class HttpClient {
     private static PhpService sApiService;
 
     public static PhpService getApiService() {
         if (sApiService == null) {
-            synchronized (HttpClientRetrofit.class) {
+            synchronized (HttpClient.class) {
                 if (sApiService == null) {
                     HttpProxy proxy = new HttpProxy.Builder()
                             .baseUrl("http://119.23.237.24:8080/apidemo/api/")

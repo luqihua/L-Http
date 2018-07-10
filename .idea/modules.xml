@@ -5,7 +5,6 @@
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/lib-annotation/lib-annotation.iml" filepath="$PROJECT_DIR$/lib-annotation/lib-annotation.iml" />
       <module fileurl="file://$PROJECT_DIR$/lib-http/lib-http.iml" filepath="$PROJECT_DIR$/lib-http/lib-http.iml" />
-      <module fileurl="file://$PROJECT_DIR$/lib-processor/lib-processor.iml" filepath="$PROJECT_DIR$/lib-processor/lib-processor.iml" />
       <module fileurl="file://$PROJECT_DIR$/libRxHttp.iml" filepath="$PROJECT_DIR$/libRxHttp.iml" />
     </modules>
   </component>

@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
  * @Time: 2018/6/7
  * @Description: ParamMap
  */
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PARAMETER)
 public @interface ParamMap {
 }

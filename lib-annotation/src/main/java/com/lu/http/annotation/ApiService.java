@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
  * @Time: 2018/6/26
  * @Description: ApiService
  */
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface ApiService {
 }

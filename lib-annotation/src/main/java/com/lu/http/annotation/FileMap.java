@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
  * @Time: 2018/6/8
  * @Description: FileMap
  */
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PARAMETER)
 public @interface FileMap {
 }

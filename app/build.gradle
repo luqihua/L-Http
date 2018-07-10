@@ -26,5 +26,5 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "com.android.support:appcompat-v7:${SUPPORT_SDK_VERSION}"
     implementation project(':lib-http')
-    annotationProcessor project(':lib-processor')
+//    annotationProcessor project(':lib-processor')
 }
