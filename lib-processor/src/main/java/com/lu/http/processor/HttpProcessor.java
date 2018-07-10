@@ -80,7 +80,7 @@ public class HttpProcessor extends AbstractProcessor {
         final String classImpName = element.getSimpleName().toString() + Constants.IMPL_CLASS_SUFFIX;
         TypeSpec.Builder builder = TypeSpec.classBuilder(classImpName)
                 .addModifiers(Modifier.PUBLIC)
-                //添加衣蛾全局变量  String _baseUrl
+                //添加一个全局变量  String _baseUrl
                 .addField(String.class, "_baseUrl", Modifier.FINAL, Modifier.PRIVATE)
                 .addMethod(MethodSpec.constructorBuilder()
                         .addModifiers(Modifier.PUBLIC)
@@ -92,18 +92,19 @@ public class HttpProcessor extends AbstractProcessor {
                 .addSuperinterface(TypeName.get(element.asType()));
 
         //构建方法
+        MethodCreate methodCreate = new MethodCreate();
         for (Element enclosedElement : element.getEnclosedElements()) {
+            //只处理方法
             if (!(enclosedElement instanceof ExecutableElement) || enclosedElement.getKind() != ElementKind.METHOD) {
                 continue;
             }
             ExecutableElement executableElement = (ExecutableElement) enclosedElement;
-            //生成接口中的方法
-            //必须有GET或者POST注解才能生成代码
+            //生成接口中的方法,必须有LRequest注解才能生成代码
             if (executableElement.getAnnotation(LRequest.class) == null) {
                 continue;
             }
             //生成方法
-            builder.addMethod(new MethodCreate().createMethod(executableElement));
+            builder.addMethod(methodCreate.createMethod(executableElement));
         }
 
         JavaFile javaFile = JavaFile.builder(mElementUtils.getPackageOf(element).toString(), builder.build())
@@ -129,10 +130,10 @@ public class HttpProcessor extends AbstractProcessor {
                 break;
             }
         }
-
         return FieldSpec.builder(requestType, "_request")
                 .addModifiers(Modifier.PRIVATE)
                 .initializer("new $T()", requestType)
                 .build();
+
     }
 }

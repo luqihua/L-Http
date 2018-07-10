@@ -60,19 +60,19 @@ public class OkClient {
      */
     public void cancelRequest(Object tag) {
 
-        tag = HttpTool.formatRequestTag(tag);
-        List<Call> queuedCalls = mClient.dispatcher().queuedCalls();
-        for (Call call : queuedCalls) {
-            if (call.request().tag().equals(tag)) {
-                call.cancel();
-            }
-        }
+      tag = HttpTool.formatRequestTag(tag);
+      List<Call> queuedCalls = mClient.dispatcher().queuedCalls();
+      for (Call call : queuedCalls) {
+          if (call.request().tag().equals(tag)) {
+              call.cancel();
+          }
+      }
 
-        List<Call> runningCalls = mClient.dispatcher().runningCalls();
-        for (Call call : runningCalls) {
-            if (call.request().tag().equals(tag)) {
-                call.cancel();
-            }
+      List<Call> runningCalls = mClient.dispatcher().runningCalls();
+      for (Call call : runningCalls) {
+          if (call.request().tag().equals(tag)) {
+              call.cancel();
+          }
         }
     }
 
