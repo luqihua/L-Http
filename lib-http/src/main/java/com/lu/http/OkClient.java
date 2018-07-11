@@ -11,9 +11,9 @@ import okhttp3.Call;
 import okhttp3.OkHttpClient;
 
 /**
- * @Author: luqihua
- * @Time: 2018/6/7
- * @Description: HttpCore
+ * Author: luqihua
+ * Time: 2018/6/7
+ * Description: HttpCore
  */
 
 public class OkClient {

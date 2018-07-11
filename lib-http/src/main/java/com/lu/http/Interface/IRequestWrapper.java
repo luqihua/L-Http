@@ -7,9 +7,9 @@ import java.lang.reflect.Type;
 import java.util.Map;
 
 /**
- * @Author: luqihua
- * @Time: 2018/6/22
- * @Description: IRequestWrapper
+ * Author: luqihua
+ * Time: 2018/6/22
+ * Description: IRequestWrapper
  */
 public interface IRequestWrapper<T> {
     T form(final String url,

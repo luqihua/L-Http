@@ -7,9 +7,9 @@ import okhttp3.Cache;
 import okhttp3.Interceptor;
 
 /**
- * @Author: luqihua
- * @Time: 2018/6/21
- * @Description: OkConfigure
+ * Author: luqihua
+ * Time: 2018/6/21
+ * Description: OkConfigure
  */
 public class OkConfigure {
     public long connectTimeOut;

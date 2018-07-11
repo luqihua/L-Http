@@ -18,9 +18,9 @@ import io.reactivex.functions.Function;
 import okhttp3.ResponseBody;
 
 /**
- * @Author: luqihua
- * @Time: 2018/6/5
- * @Description: HttpRequest
+ * Author: luqihua
+ * Time: 2018/6/5
+ * Description: HttpRequest
  */
 @RequestWrapper
 public class HttpRequest implements IRequestWrapper<Observable<?>> {
