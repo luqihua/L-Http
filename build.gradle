@@ -42,3 +42,4 @@ ext {
     SUPPORT_SDK_VERSION = '27.1.1'
 }
 
+tasks.getByPath(":lib-http:releaseAndroidJavadocs").enabled=false
