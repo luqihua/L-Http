@@ -1,7 +1,6 @@
 package com.lu.httpdemo.api;
 
 import com.lu.http.Interface.IProgressListener;
-import com.lu.http.annotation.ApiService;
 import com.lu.http.annotation.Body;
 import com.lu.http.annotation.ContextType;
 import com.lu.http.annotation.FileParam;
@@ -23,7 +22,6 @@ import io.reactivex.Observable;
  * @Time: 2018/6/6
  * @Description: JavaService
  */
-@ApiService
 public interface JAVAService {
 
     @LRequest("http://120.79.233.108:8080/api/loginForm")

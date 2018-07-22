@@ -2,7 +2,6 @@ package com.lu.httpdemo.api;
 
 
 import com.lu.http.Interface.IProgressListener;
-import com.lu.http.annotation.ApiService;
 import com.lu.http.annotation.Body;
 import com.lu.http.annotation.FileParam;
 import com.lu.http.annotation.LMethod;
@@ -22,7 +21,6 @@ import io.reactivex.Observable;
  * Time: 2017/11/17
  * Description: ApiService
  */
-@ApiService
 public interface PhpService {
 
     //简单的form请求
