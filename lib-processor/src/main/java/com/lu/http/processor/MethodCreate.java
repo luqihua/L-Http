@@ -77,7 +77,7 @@ public class MethodCreate {
 
         //如果是MULTIPART  则添加一个Map<String,File> _fileMap = new HashMap<>();用于存放文件数据
         if (LRequest.type() == ContextType.MULTIPART) {
-            methodBuilder.addStatement("$T<String,$T> _fileMap = new $T<>()", Map.class, File.class, HashMap.class);
+            methodBuilder.addStatement("final $T<String,$T> _fileMap = new $T<>()", Map.class, File.class, HashMap.class);
         }
 
         //解析方法的形参

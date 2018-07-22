@@ -9,7 +9,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.lu.http.Interface.IProgressListener;
-import com.lu.httpdemo.HttpClientRetrofit;
+import com.lu.httpdemo.HttpClientApt;
 import com.lu.httpdemo.bean.HttpResult;
 import com.lu.httpdemo.util.BindView;
 import com.lu.httpdemo.util.FileStorageUtil;
@@ -92,7 +92,7 @@ public class MultiPartActivity extends AppCompatActivity {
             return;
         }
 
-        HttpClientRetrofit.getApiService()
+        HttpClientApt.getApiService()
                 .upload("luqihua", "123456", imageFile1,
                         new IProgressListener() {
                             @Override

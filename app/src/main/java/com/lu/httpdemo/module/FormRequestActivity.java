@@ -10,9 +10,9 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import com.lu.httpdemo.HttpClientRetrofit;
 import lu.httpdemo.R;
 
+import com.lu.httpdemo.HttpClientApt;
 import com.lu.httpdemo.bean.HttpResult;
 import com.lu.httpdemo.bean.User;
 import com.lu.httpdemo.util.BindView;
@@ -32,7 +32,7 @@ public class FormRequestActivity extends AppCompatActivity {
 
 
     public void get(View view) {
-        HttpClientRetrofit.getApiService()
+        HttpClientApt.getApiService()
                 .getLogin("luqihua", "hello")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -61,7 +61,7 @@ public class FormRequestActivity extends AppCompatActivity {
 
 
     public void post(View view) {
-        HttpClientRetrofit.getApiService()
+        HttpClientApt.getApiService()
                 .login("luqihua", "hello")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

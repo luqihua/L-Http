@@ -4,6 +4,7 @@ package com.lu.httpdemo.api;
 import com.lu.http.Interface.IProgressListener;
 import com.lu.http.annotation.ApiService;
 import com.lu.http.annotation.Body;
+import com.lu.http.annotation.ContextType;
 import com.lu.http.annotation.FileParam;
 import com.lu.http.annotation.LMethod;
 import com.lu.http.annotation.LRequest;
@@ -36,12 +37,12 @@ public interface PhpService {
             , @Param("password") String password);
 
     //json实体请求
-    @LRequest("loginJson")
+    @LRequest(value = "loginJson",type = ContextType.JSON)
     Observable<HttpResult<User>> loginJson(@Body User user);
 
 
     //文件上传
-    @LRequest("upload")
+    @LRequest(value = "upload",type = ContextType.MULTIPART)
     Observable<HttpResult<Map<String, String>>> upload(@Param("username") String username,
                                                        @Param("password") String password,
                                                        @FileParam("avatar") File image,
