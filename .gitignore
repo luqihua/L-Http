@@ -10,3 +10,4 @@
 /app/build/
 /FileDown/
 *.jks
+/gradle.sh
