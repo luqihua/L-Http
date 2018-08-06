@@ -1,0 +1,10 @@
+apply plugin: 'com.novoda.bintray-release'
+publish {
+    repoName = 'maven'//远程仓库名字,不指明，默认是上传到maven
+    userOrg = 'qihua'//bintray.com的用户名
+    groupId = 'com.lu.lib'//jcenter上的路径
+    artifactId = 'lib-annotation'//项目名称
+    publishVersion = libVersion//版本号
+    desc = 'an annotation library'//描述
+    website = "https://github.com/luqihua/libHttp"//github 地址
+}
