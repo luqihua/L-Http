@@ -1,5 +1,4 @@
 apply plugin: 'com.novoda.bintray-release'
-apply plugin: 'com.novoda.bintray-release'
 publish {
     repoName = lib_repoName//远程仓库名字,不指明，默认是上传到maven
     userOrg = lib_userOrg//bintray.com的用户名

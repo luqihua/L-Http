@@ -36,19 +36,18 @@ ext {
 
     //jcent.gradle脚本变量
 //    ================================
-    //上传lib-http
-//    uploadModule = 0
-    //上传lib-processor
-    uploadModule = 1
+//    uploadModule = 0//上传lib-http
+//    uploadModule = 1//上传lib-annotation
+    uploadModule = 2//上传lib-processor
     //SDK版本
-    lib_Version = '0.0.7'
+    lib_Version = '1.0'
 //    ================================
-    lib_module=''
+    lib_module = ''//要上传的module
     if (uploadModule == 1) {
         lib_module = 'lhttp-annotation'
     } else if (uploadModule == 2) {
         lib_module = 'lhttp-processor'
-    } else {
+    } else if (uploadModule == 0) {
         lib_module = 'lhttp'
     }
 
@@ -65,5 +64,10 @@ try {
 }
 try {
     tasks.getByPath(":lib-processor:releaseAndroidJavadocs").enabled = false
+} catch (Exception e) {
+}
+
+try {
+    tasks.getByPath(":lib-annotation:releaseAndroidJavadocs").enabled = false
 } catch (Exception e) {
 }
