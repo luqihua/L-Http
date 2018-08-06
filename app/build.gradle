@@ -26,8 +26,8 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "com.android.support:appcompat-v7:${SUPPORT_SDK_VERSION}"
-    implementation project(':lib-http')
-//    implementation 'com.lu.lib:lhttp:1.0'
-    annotationProcessor project(':lib-processor')
-//    annotationProcessor 'com.lu.lib:lhttp-processor:1.0'
+//    implementation project(':lib-http')
+    implementation 'com.lu.lib:lhttp:1.0'
+//    annotationProcessor project(':lib-processor')
+    annotationProcessor 'com.lu.lib:lhttp-processor:1.0'
 }

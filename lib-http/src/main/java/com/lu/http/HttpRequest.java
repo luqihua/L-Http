@@ -22,7 +22,7 @@ import okhttp3.ResponseBody;
  * @Time: 2018/6/5
  * @Description: HttpRequest
  */
-@RequestWrapper
+//@RequestWrapper
 public class HttpRequest implements IRequestWrapper<Observable<?>> {
     private static Gson sGson = new Gson();
 
