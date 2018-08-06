@@ -1,3 +1,13 @@
+#### [博客地址]() 
+#### gradle方式引入
+
+```java
+   implementation 'com.lu.lib:lhttp:1.0'
+   annotationProcessor 'com.lu.lib:lhttp-processor:1.0'
+```
+
+#### 简单使用
+
 1. 初始化`okhttpclient`
 
 ```java
@@ -67,3 +77,4 @@ service.getLogin("luqihua", "hello")
                });           
                
 ```   
+
