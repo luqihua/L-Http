@@ -6,7 +6,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.lu.httpdemo.HttpClientApt;
+import com.lu.httpdemo.HttpClient;
 import com.lu.httpdemo.bean.HttpResult;
 import com.lu.httpdemo.bean.User;
 
@@ -38,7 +38,7 @@ public class JsonActivity extends AppCompatActivity {
         user.setAge(28);
         user.setPassword("helloworld");
 
-        HttpClientApt.getApiService()
+        HttpClient.getApiService()
                 .loginJson(user)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

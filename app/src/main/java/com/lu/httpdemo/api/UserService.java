@@ -24,7 +24,7 @@ import io.reactivex.Observable;
  * Description: ApiService
  */
 @ApiService
-public interface PhpService {
+public interface UserService {
 
     //简单的form请求
     @LRequest("login")

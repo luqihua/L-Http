@@ -34,15 +34,29 @@ ext {
     //com.android.support下包的版本
     SUPPORT_SDK_VERSION = '27.1.1'
 
+    //jcent.gradle脚本变量
+//    ================================
     //上传lib-http
 //    uploadModule = 0
     //上传lib-processor
     uploadModule = 1
-    //上传lib-annotation
-//    uploadModule = 2
+    //SDK版本
+    lib_Version = '0.0.7'
+//    ================================
+    lib_module=''
+    if (uploadModule == 1) {
+        lib_module = 'lhttp-annotation'
+    } else if (uploadModule == 2) {
+        lib_module = 'lhttp-processor'
+    } else {
+        lib_module = 'lhttp'
+    }
 
-
-    libVersion = '0.0.7'
+    lib_repoName = 'maven'//远程仓库名字,不指明，默认是上传到maven
+    lib_userOrg = 'qihua'//bintray.com的用户名
+    lib_groupId = 'com.lu.lib'//jcenter上的路径
+    lib_desc = 'an http library'//描述
+    lib_website = "https://github.com/luqihua/libHttp"//github 地址
 }
 
 try {
@@ -52,6 +66,4 @@ try {
 try {
     tasks.getByPath(":lib-processor:releaseAndroidJavadocs").enabled = false
 } catch (Exception e) {
-//
 }
-//tasks.getByPath(":lib-processor:releaseAndroidJavadocs").enabled=false

@@ -12,6 +12,6 @@ dependencies {
     implementation 'com.lu.lib:lib-annotation:0.0.1'
 }
 /*发布到jcenter的配置*/
-if (uploadModule == 1) {
+if (uploadModule == 2) {
     apply from: 'jcent.gradle'
 }

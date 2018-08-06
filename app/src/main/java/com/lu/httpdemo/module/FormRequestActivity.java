@@ -6,7 +6,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.lu.httpdemo.HttpClientApt;
+import com.lu.httpdemo.HttpClient;
 import com.lu.httpdemo.bean.HttpResult;
 import com.lu.httpdemo.bean.User;
 
@@ -33,7 +33,7 @@ public class FormRequestActivity extends AppCompatActivity {
 
 
     public void get(View view) {
-        HttpClientApt.getApiService()
+        HttpClient.getApiService()
                 .getLogin("luqihua", "hello")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -62,7 +62,7 @@ public class FormRequestActivity extends AppCompatActivity {
 
 
     public void post(View view) {
-        HttpClientApt.getApiService()
+        HttpClient.getApiService()
                 .login("luqihua", "hello")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

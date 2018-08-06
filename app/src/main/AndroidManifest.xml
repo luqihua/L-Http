@@ -22,9 +22,8 @@
         </activity>
         <activity android:name="com.lu.httpdemo.module.FormRequestActivity" />
         <activity android:name="com.lu.httpdemo.module.DownLoadActivity" />
-        <activity android:name="com.lu.httpdemo.module.HttpsActivity" />
         <activity android:name="com.lu.httpdemo.module.MultiPartActivity" />
-        <activity android:name="com.lu.httpdemo.module.JsonActivity"></activity>
+        <activity android:name="com.lu.httpdemo.module.JsonActivity" />
     </application>
 
 </manifest>

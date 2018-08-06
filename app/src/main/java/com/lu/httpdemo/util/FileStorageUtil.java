@@ -15,7 +15,6 @@ import java.io.File;
 public class FileStorageUtil {
 
     private String mAppCacheDir = "";
-    private String rootDir = "tmp";
     private boolean hasInitialize = false;
 
     private FileStorageUtil() {
@@ -31,40 +30,21 @@ public class FileStorageUtil {
 
     public void init(Context context) {
         if (!hasInitialize) {
+            if (context == null) {
+                throw new RuntimeException("FileStorageUtil: context must not be null");
+            }
             hasInitialize = true;
-            this.rootDir = context.getPackageName();
-            this.mAppCacheDir = context.getCacheDir().getAbsolutePath();
-        }
-    }
-
-    /**
-     * app external adCard root file path
-     *
-     * @return
-     */
-    public File getAppRootFile() {
-
-        if (!hasInitialize) {
-            throw new RuntimeException("please invoke FileStorageUtil.getInstance().init(context) first");
-        }
-        File file = null;
-        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-            file = new File(Environment.getExternalStorageDirectory()
-                    .getAbsolutePath(), rootDir);
-        } else {
-            if (!TextUtils.isEmpty(mAppCacheDir)) {
-                file = new File(mAppCacheDir, rootDir);
+            final String rootDir = context.getPackageName();
+            if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+                this.mAppCacheDir = Environment.getExternalStorageDirectory()
+                        .getAbsolutePath() + "/" + rootDir;
+            } else {
+                this.mAppCacheDir = context.getCacheDir().getAbsolutePath();
             }
         }
-
-        if (file != null && !file.exists()) {
-            file.mkdirs();
-        }
-        return file;
     }
 
     public File getFileByName(String name) {
-        return new File(getAppRootFile(), name);
+        return new File(mAppCacheDir, name);
     }
-
 }

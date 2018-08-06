@@ -16,7 +16,11 @@
         android:onClick="jsonRequest"
         android:text="传递json请求" />
 
-
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="uploadFile"
+        android:text="文件上传" />
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

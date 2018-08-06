@@ -22,11 +22,12 @@ android {
 }
 
 dependencies {
+    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
     testImplementation 'junit:junit:4.12'
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "com.android.support:appcompat-v7:${SUPPORT_SDK_VERSION}"
-//    implementation project(':lib-http')
-    implementation 'com.lu:libhttp-apt:0.0.7'
+    implementation project(':lib-http')
+//    implementation 'com.lu:libhttp-apt:0.0.7'
 //    annotationProcessor project(':lib-processor')
-    annotationProcessor  'com.lu:libhttp-processor:0.0.7'
+    annotationProcessor 'com.lu:libhttp-processor:0.0.7'
 }

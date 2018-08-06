@@ -33,11 +33,11 @@ public class DownLoadActivity extends AppCompatActivity {
 
     public void singleFile(View view) {
 
-        final File file = FileStorageUtil.getInstance().getFileByName("dingding.exe");
+        final File file = FileStorageUtil.getInstance().getFileByName("YoudaoNote");
 
         new DownLoadRequest()
                 //钉钉的安装程序下载地址   文件比较大可能会断
-                .url("http://sw.bos.baidu.com/sw-search-sp/software/2d47084bcbd4d/dd_3.4.8.exe")
+                .url("http://www.luqihua.cn/libhttp/YoudaoNote")
                 //可选择是否订阅进度
                 .progress(new IProgressListener() {
                     @Override
@@ -71,9 +71,4 @@ public class DownLoadActivity extends AppCompatActivity {
                 });
 
     }
-
-    public void baseTest(View view) {
-
-    }
-
 }
